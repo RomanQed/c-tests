@@ -72,6 +72,10 @@ public class Task {
         if (!testsDirectory.mkdirs()) {
             throw new IllegalStateException("Can't create tests directory " + testsDirectory);
         }
+        File main = new File(directory.getAbsolutePath() + "/main.c");
+        if (!main.createNewFile()) {
+            throw new IllegalStateException("Can't create main source code file!");
+        }
         if (handler != null) {
             handler.handle(directory);
         }

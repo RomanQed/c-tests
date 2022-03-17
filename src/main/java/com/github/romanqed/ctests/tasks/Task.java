@@ -13,6 +13,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Task {
+    private static final String TEST_DATA = "/func_tests/data";
+    private static final String SOURCE_FILE = "/main.c";
     private static final Pattern LAB_TASK = Pattern.compile("lab_(\\d+)_(\\d+)(?:_(\\d+))?");
     private final File directory;
     private TaskData data;
@@ -68,11 +70,11 @@ public class Task {
         if (!directory.mkdir()) {
             throw new IllegalStateException("Can't create task directory " + directory);
         }
-        File testsDirectory = new File(name + "/func_tests/data");
+        File testsDirectory = new File(name + TEST_DATA);
         if (!testsDirectory.mkdirs()) {
             throw new IllegalStateException("Can't create tests directory " + testsDirectory);
         }
-        File main = new File(directory.getAbsolutePath() + "/main.c");
+        File main = new File(directory.getAbsolutePath() + SOURCE_FILE);
         if (!main.createNewFile()) {
             throw new IllegalStateException("Can't create main source code file!");
         }

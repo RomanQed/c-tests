@@ -11,7 +11,7 @@ repositories {
 }
 
 dependencies {
-
+    implementation group: 'com.github.romanqed', name: 'jutils', version: '3.0.2'
 }
 
 jar {

@@ -43,7 +43,7 @@ public class Task {
         ret.data.setLabNumber(Integer.parseInt(matcher.group(1)));
         ret.data.setNumber(Integer.parseInt(matcher.group(2)));
         ret.data.setVariant(Integer.parseInt(matcher.group(3)));
-        File testDirectory = new File(directory.getAbsolutePath() + "/func_tests/data");
+        File testDirectory = new File(directory.getAbsolutePath() + TEST_DATA);
         if (testDirectory.exists() && testDirectory.isDirectory()) {
             ret.tests = IOUtil.findAllTests(testDirectory);
         }

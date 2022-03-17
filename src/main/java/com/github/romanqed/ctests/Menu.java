@@ -69,7 +69,7 @@ public class Menu implements Runnable {
         flag.set(true);
         while (flag.get()) {
             System.out.print(prompt);
-            String input = scanner.next();
+            String input = scanner.nextLine();
             if (input.equals(EXIT)) {
                 flag.set(false);
                 break;

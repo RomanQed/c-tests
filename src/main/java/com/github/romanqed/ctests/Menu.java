@@ -10,23 +10,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Menu implements Runnable {
     private static final char SPLIT = ' ';
     private static final String EXIT = "exit";
-    private static final String MENU = "menu";
     private static final String NOT_FOUND = "Command not found!";
 
-    private static String generateMenu(Collection<String> commands) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("Available commands: \n");
-        for (String command : commands) {
-            builder.append("* ").append(command).append('\n');
-        }
-        if (commands.isEmpty()) {
-            builder.append("* There is not a single command!\n");
-        }
-        return builder.toString();
-    }
-
     private final String prompt;
-    private final String menu;
     private final Scanner scanner;
     private final Map<String, ConsoleCommand> commands;
     private final AtomicBoolean flag;
@@ -40,7 +26,6 @@ public class Menu implements Runnable {
         for (ConsoleCommand command : commands) {
             this.commands.put(command.getName(), command);
         }
-        menu = generateMenu(this.commands.keySet());
     }
 
     public Menu(Collection<ConsoleCommand> commands) {
@@ -73,10 +58,6 @@ public class Menu implements Runnable {
             if (input.equals(EXIT)) {
                 flag.set(false);
                 break;
-            }
-            if (input.equals(MENU)) {
-                System.out.println(menu);
-                continue;
             }
             Data data = parseRawString(input);
             ConsoleCommand command = commands.get(data.command);

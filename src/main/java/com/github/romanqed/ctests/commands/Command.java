@@ -6,7 +6,7 @@ import com.github.romanqed.jutils.util.Handler;
 public abstract class Command implements Handler<String[]> {
     public static final String DEFAULT_COMMAND_NAME = "command";
 
-    protected final String name;
+    protected String name;
 
     public Command(String name) {
         this.name = Checks.requireNonNullElse(name, DEFAULT_COMMAND_NAME);

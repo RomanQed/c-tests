@@ -11,6 +11,8 @@ repositories {
 }
 
 dependencies {
+    implementation group: 'org.atteo.classindex', name: 'classindex', version: '3.4'
+    annotationProcessor group: 'org.atteo.classindex', name: 'classindex', version: '3.4'
     implementation group: 'com.github.romanqed', name: 'jutils', version: '3.0.2'
 }
 

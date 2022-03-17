@@ -3,7 +3,12 @@ package com.github.romanqed.ctests.util;
 import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.tests.TestType;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +17,20 @@ public class IOUtil {
     private static final Pattern IN = Pattern.compile("(pos|neg)_(\\d+)_in\\.txt");
     private static final Pattern OUT = Pattern.compile("(pos|neg)_(\\d+)_out\\.txt");
     private static final Pattern ARGS = Pattern.compile("(pos|neg)_(\\d+)_args\\.txt");
+
+    public static String readInputStream(InputStream stream, Charset charset) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
+        return reader.lines().reduce("", (left, right) -> left + right + "\n");
+    }
+
+    public static String readResourceFile(String name) {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        InputStream stream = classLoader.getResourceAsStream(name);
+        if (stream == null) {
+            return "";
+        }
+        return readInputStream(stream, StandardCharsets.UTF_8);
+    }
 
     public static Map<String, File> findAllFiles(File directory, Pattern pattern) {
         Objects.requireNonNull(directory);

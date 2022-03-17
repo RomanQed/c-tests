@@ -1,9 +1,8 @@
 package com.github.romanqed.ctests.commands;
 
-import com.github.romanqed.ctests.util.IOUtil;
+import java.util.Objects;
 
 public abstract class ConsoleCommand extends Command {
-    protected String description;
     protected String help;
 
     public ConsoleCommand() {
@@ -13,18 +12,23 @@ public abstract class ConsoleCommand extends Command {
             throw new IllegalStateException("Command annotate not found!");
         }
         this.name = command.value();
-        Description description = clazz.getAnnotation(Description.class);
-        if (description != null) {
-            this.description = IOUtil.readResourceFile(description.value());
-        }
         Help help = clazz.getAnnotation(Help.class);
         if (help != null) {
-            this.help = IOUtil.readResourceFile(help.value());
+            this.help = help.value();
         }
     }
 
-    public String getDescription() {
-        return description;
+    public ConsoleCommand(String name, String description, String help) {
+        this.name = Objects.requireNonNull(name);
+        this.help = Objects.requireNonNull(help);
+    }
+
+    public ConsoleCommand(String name, String description) {
+        this(name, description, "");
+    }
+
+    public ConsoleCommand(String name) {
+        this(name, "", "");
     }
 
     public String getHelp() {

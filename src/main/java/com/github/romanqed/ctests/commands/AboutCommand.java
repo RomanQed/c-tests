@@ -6,7 +6,7 @@ import java.util.List;
 @Help("about")
 public class AboutCommand extends ConsoleCommand {
     @Override
-    public void handle(List<String> args) throws Exception {
+    public void handle(List<String> args) {
         System.out.println("Программа - невкусная, автор - любит пиво \"Старый мельник\".");
     }
 }

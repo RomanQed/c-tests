@@ -4,16 +4,15 @@ import com.github.romanqed.ctests.commands.ConsoleCommand;
 import com.github.romanqed.ctests.commands.NamedCommand;
 import org.atteo.classindex.ClassIndex;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReflectionUtil {
-    public static Map<String, ConsoleCommand> findAllCommands() throws InstantiationException, IllegalAccessException {
+    public static List<ConsoleCommand> findAllCommands() throws InstantiationException, IllegalAccessException {
         Iterable<Class<?>> classes = ClassIndex.getAnnotated(NamedCommand.class);
-        Map<String, ConsoleCommand> ret = new HashMap<>();
+        List<ConsoleCommand> ret = new ArrayList<>();
         for (Class<?> clazz : classes) {
-            ConsoleCommand command = (ConsoleCommand) clazz.newInstance();
-            ret.put(command.getName(), command);
+            ret.add((ConsoleCommand) clazz.newInstance());
         }
         return ret;
     }

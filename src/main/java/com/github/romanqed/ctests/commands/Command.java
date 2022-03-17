@@ -3,7 +3,9 @@ package com.github.romanqed.ctests.commands;
 import com.github.romanqed.jutils.util.Checks;
 import com.github.romanqed.jutils.util.Handler;
 
-public abstract class Command implements Handler<String[]> {
+import java.util.List;
+
+public abstract class Command implements Handler<List<String>> {
     public static final String DEFAULT_COMMAND_NAME = "command";
 
     protected String name;

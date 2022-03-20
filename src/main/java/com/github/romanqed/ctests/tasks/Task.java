@@ -88,7 +88,9 @@ public class Task {
         if (handler != null) {
             handler.handle(directory);
         }
-        return new Task(directory, data);
+        Task ret = new Task(directory, data);
+        ret.tests = new ArrayList<>();
+        return ret;
     }
 
     public static Task createDirectory(File parent, TaskData data) throws Exception {

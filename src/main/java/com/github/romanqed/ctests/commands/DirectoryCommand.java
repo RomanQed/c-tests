@@ -17,8 +17,8 @@ import java.util.Scanner;
 @NamedCommand("dir")
 @Help("dir")
 public class DirectoryCommand extends ConsoleCommand {
-    private static final Menu menu;
     static final Field<Task> TASK = new Field<>("TASK", Task.class);
+    private static final Menu menu;
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();
@@ -88,8 +88,8 @@ class ShowCommand extends ConsoleCommand {
 }
 
 class InitCommand extends ConsoleCommand {
-    private final Storage storage = StorageProvider.getStorage();
     private static final Scanner in = new Scanner(System.in);
+    private final Storage storage = StorageProvider.getStorage();
 
     public InitCommand() {
         super("init", "dir_init");

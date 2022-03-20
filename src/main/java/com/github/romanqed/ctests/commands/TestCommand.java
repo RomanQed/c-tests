@@ -11,7 +11,6 @@ import java.util.List;
 @NamedCommand("test")
 @Help("test")
 public class TestCommand extends ConsoleCommand {
-    private final Storage storage = StorageProvider.getStorage();
     private static final Menu menu;
 
     static {
@@ -21,6 +20,8 @@ public class TestCommand extends ConsoleCommand {
         menu.addCommand(new HelpCommand(menu.getCommands()));
         menu.addCommand(new MenuCommand(menu.getCommands().keySet()));
     }
+
+    private final Storage storage = StorageProvider.getStorage();
 
     @Override
     public void handle(List<String> args) throws Exception {

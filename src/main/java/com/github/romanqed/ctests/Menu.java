@@ -16,7 +16,8 @@ public class Menu implements Runnable {
     private final Scanner scanner;
     private final Map<String, ConsoleCommand> commands;
     private final AtomicBoolean flag;
-    private Runnable onExit = () -> {};
+    private Runnable onExit = () -> {
+    };
 
     public Menu(String prompt, Collection<ConsoleCommand> commands) {
         Objects.requireNonNull(commands);

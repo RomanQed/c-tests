@@ -53,7 +53,7 @@ class OpenCommand extends ConsoleCommand {
         String path = args.get(0);
         File directory = new File(path);
         Task task = Task.openDirectory(directory);
-        storage.setField(DirectoryCommand.TASK, task);
+        storage.set(DirectoryCommand.TASK, task);
     }
 }
 
@@ -66,14 +66,14 @@ class ShowCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) {
-        Task task = storage.getField(DirectoryCommand.TASK);
+        Task task = storage.get(DirectoryCommand.TASK);
         if (task == null) {
             System.out.println("Нет открытой директории!");
             return;
         }
         if (!task.getDirectory().exists()) {
             System.out.println("Нет открытой директории!");
-            storage.setField(DirectoryCommand.TASK, null);
+            storage.remove(DirectoryCommand.TASK);
             return;
         }
         TaskData data = task.getData();
@@ -112,7 +112,7 @@ class InitCommand extends ConsoleCommand {
         data.setNumber(Integer.parseInt(read("Введите номер задачи")));
         data.setVariant(Integer.parseInt(read("Введите номер варианта или -1")));
         Task task = Task.createDirectory(parent, data);
-        storage.setField(DirectoryCommand.TASK, task);
+        storage.set(DirectoryCommand.TASK, task);
     }
 
     protected String read(String prompt) {

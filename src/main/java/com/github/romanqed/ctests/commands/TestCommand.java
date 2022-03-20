@@ -15,22 +15,31 @@ public class TestCommand extends ConsoleCommand {
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();
-
+        commands.add(new ListCommand());
+        commands.add(new InfoCommand());
+        commands.add(new EditCommand());
+        commands.add(new CreateCommand());
+        commands.add(new DraftCommand());
+        commands.add(new ReadmeCommand());
         menu = new Menu(commands);
         menu.addCommand(new HelpCommand(menu.getCommands()));
         menu.addCommand(new MenuCommand(menu.getCommands().keySet()));
+        menu.onExit(() -> {
+            // TODO
+        });
     }
 
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) throws Exception {
-        Task task = storage.getField(DirectoryCommand.TASK);
+    public void handle(List<String> args) {
+        Task task = storage.get(DirectoryCommand.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
-            storage.setField(DirectoryCommand.TASK, null);
+            storage.remove(DirectoryCommand.TASK);
             return;
         }
+        menu.run();
     }
 }
 
@@ -70,6 +79,28 @@ class EditCommand extends ConsoleCommand {
 class CreateCommand extends ConsoleCommand {
     public CreateCommand() {
         super("create");
+    }
+
+    @Override
+    public void handle(List<String> args) {
+
+    }
+}
+
+class DraftCommand extends ConsoleCommand {
+    public DraftCommand() {
+        super("draft");
+    }
+
+    @Override
+    public void handle(List<String> args) {
+
+    }
+}
+
+class ReadmeCommand extends ConsoleCommand {
+    public ReadmeCommand() {
+        super("readme");
     }
 
     @Override

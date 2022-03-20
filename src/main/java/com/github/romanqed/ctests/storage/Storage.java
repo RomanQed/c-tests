@@ -11,13 +11,19 @@ public class Storage {
         fields = new ConcurrentHashMap<>();
     }
 
-    public <T> void setField(Field<T> field, T value) {
+    public <T> void set(Field<T> field, T value) {
         Objects.requireNonNull(field);
+        Objects.requireNonNull(value);
         fields.put(field.getName(), value);
     }
 
+    public <T> void remove(Field<T> field) {
+        Objects.requireNonNull(field);
+        fields.remove(field.getName());
+    }
+
     @SuppressWarnings("unchecked")
-    public <T> T getField(Field<T> field) {
+    public <T> T get(Field<T> field) {
         Objects.requireNonNull(field);
         return (T) fields.get(field.getName());
     }

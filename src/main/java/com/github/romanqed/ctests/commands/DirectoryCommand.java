@@ -10,7 +10,7 @@ import com.github.romanqed.ctests.util.InvalidTaskDirectoryException;
 import com.github.romanqed.ctests.util.InvalidTestException;
 
 import java.io.File;
-import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -21,7 +21,13 @@ public class DirectoryCommand extends ConsoleCommand {
     static final Field<Task> TASK = new Field<>("TASK", Task.class);
 
     static {
-        menu = new Menu(Arrays.asList(new OpenCommand(), new ShowCommand(), new InitCommand()));
+        List<ConsoleCommand> commands = new LinkedList<>();
+        commands.add(new OpenCommand());
+        commands.add(new ShowCommand());
+        commands.add(new InitCommand());
+        menu = new Menu(commands);
+        menu.addCommand(new HelpCommand(menu.getCommands()));
+        menu.addCommand(new MenuCommand(menu.getCommands().keySet()));
     }
 
     @Override
@@ -35,7 +41,7 @@ class OpenCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     public OpenCommand() {
-        super("open");
+        super("open", "dir_open");
     }
 
     @Override
@@ -55,7 +61,7 @@ class ShowCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     public ShowCommand() {
-        super("show");
+        super("show", "dir_show");
     }
 
     @Override
@@ -86,7 +92,7 @@ class InitCommand extends ConsoleCommand {
     private static final Scanner in = new Scanner(System.in);
 
     public InitCommand() {
-        super("init");
+        super("init", "dir_init");
     }
 
     @Override

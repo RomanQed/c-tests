@@ -18,17 +18,13 @@ public abstract class ConsoleCommand extends Command {
         }
     }
 
-    public ConsoleCommand(String name, String description, String help) {
+    public ConsoleCommand(String name, String help) {
         this.name = Objects.requireNonNull(name);
-        this.help = Objects.requireNonNull(help);
-    }
-
-    public ConsoleCommand(String name, String description) {
-        this(name, description, "");
+        this.help = help;
     }
 
     public ConsoleCommand(String name) {
-        this(name, "", "");
+        this(name, null);
     }
 
     public String getHelp() {

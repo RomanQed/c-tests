@@ -16,13 +16,14 @@ public class Menu implements Runnable {
     private final Scanner scanner;
     private final Map<String, ConsoleCommand> commands;
     private final AtomicBoolean flag;
+    private Runnable onExit = () -> {};
 
     public Menu(String prompt, Collection<ConsoleCommand> commands) {
         Objects.requireNonNull(commands);
         this.prompt = Objects.requireNonNull(prompt);
-        this.commands = new ConcurrentHashMap<>();
         this.flag = new AtomicBoolean(false);
         this.scanner = new Scanner(System.in);
+        this.commands = new ConcurrentHashMap<>();
         for (ConsoleCommand command : commands) {
             this.commands.put(command.getName(), command);
         }
@@ -43,6 +44,18 @@ public class Menu implements Runnable {
         ret.command = rawString.substring(0, pos);
         ret.arguments = ParseUtil.parseArguments(rawString.substring(pos + 1));
         return ret;
+    }
+
+    public Map<String, ConsoleCommand> getCommands() {
+        return Collections.unmodifiableMap(commands);
+    }
+
+    public void addCommand(ConsoleCommand command) {
+        Objects.requireNonNull(command);
+        if (flag.get()) {
+            throw new IllegalStateException("Menu run");
+        }
+        commands.put(command.getName(), command);
     }
 
     public void stop() {
@@ -71,6 +84,11 @@ public class Menu implements Runnable {
                 System.out.println("Error during command execution: " + e.getMessage());
             }
         }
+        onExit.run();
+    }
+
+    public void onExit(Runnable onExit) {
+        this.onExit = Objects.requireNonNull(onExit);
     }
 
     private static class Data {

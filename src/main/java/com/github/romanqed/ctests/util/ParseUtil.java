@@ -17,4 +17,11 @@ public class ParseUtil {
         }
         return ret;
     }
+
+    public static String formatNumber(int number) {
+        if (number < 10) {
+            return "0" + number;
+        }
+        return String.valueOf(number);
+    }
 }

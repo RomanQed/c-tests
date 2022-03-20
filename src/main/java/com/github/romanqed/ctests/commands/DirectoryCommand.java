@@ -32,7 +32,7 @@ public class DirectoryCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) {
-        System.out.println("Подменю для работы с директорией: ");
+        System.out.println("Подменю для работы с директорией");
         menu.run();
     }
 }

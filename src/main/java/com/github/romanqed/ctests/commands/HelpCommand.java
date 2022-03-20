@@ -2,6 +2,7 @@ package com.github.romanqed.ctests.commands;
 
 import com.github.romanqed.ctests.util.IOUtil;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -15,7 +16,7 @@ public class HelpCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> args) throws IOException {
         if (args.size() != 1) {
             System.out.println("Неверное количество аргументов!");
             return;

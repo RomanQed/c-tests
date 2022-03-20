@@ -4,9 +4,11 @@ import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.util.IOUtil;
 import com.github.romanqed.ctests.util.InvalidTaskDirectoryException;
 import com.github.romanqed.ctests.util.InvalidTestException;
+import com.github.romanqed.ctests.util.ParseUtil;
 import com.github.romanqed.jutils.util.Handler;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -55,15 +57,10 @@ public class Task {
         File testDirectory = new File(directory.getAbsolutePath() + TEST_DATA);
         if (testDirectory.exists() && testDirectory.isDirectory()) {
             ret.tests = IOUtil.findAllTests(testDirectory);
+        } else {
+            ret.tests = new ArrayList<>();
         }
         return ret;
-    }
-
-    private static String formatNumber(int number) {
-        if (number < 10) {
-            return "0" + number;
-        }
-        return String.valueOf(number);
     }
 
     public static Task createDirectory(File parent, TaskData data, Handler<File> handler) throws Exception {
@@ -72,9 +69,9 @@ public class Task {
         if (!(parent.exists() && parent.isDirectory())) {
             throw new IllegalStateException("Invalid parent directory!");
         }
-        String name = "lab_" + formatNumber(data.labNumber) + "_" + formatNumber(data.number);
+        String name = "lab_" + ParseUtil.formatNumber(data.labNumber) + "_" + ParseUtil.formatNumber(data.number);
         if (data.variant >= 0) {
-            name += "_" + formatNumber(data.variant);
+            name += "_" + ParseUtil.formatNumber(data.variant);
         }
         File directory = new File(name);
         if (!directory.mkdir()) {

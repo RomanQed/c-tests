@@ -3,10 +3,7 @@ package com.github.romanqed.ctests.util;
 import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.tests.TestType;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -18,18 +15,51 @@ public class IOUtil {
     private static final Pattern OUT = Pattern.compile("(pos|neg)_(\\d+)_out\\.txt");
     private static final Pattern ARGS = Pattern.compile("(pos|neg)_(\\d+)_args\\.txt");
 
-    public static String readInputStream(InputStream stream, Charset charset) {
+    public static String readInputStream(InputStream stream, Charset charset) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));
-        return reader.lines().reduce("", (left, right) -> left + right + "\n");
+        String ret = reader.lines().reduce("", (left, right) -> left + right + "\n");
+        reader.close();
+        return ret;
     }
 
-    public static String readResourceFile(String name) {
+    public static void writeOutputStream(OutputStream stream, String body, Charset charset) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
+        writer.write(body);
+        writer.flush();
+        writer.close();
+    }
+
+    public static String readResourceFile(String name) throws IOException {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         InputStream stream = classLoader.getResourceAsStream(name);
         if (stream == null) {
             return "";
         }
         return readInputStream(stream, StandardCharsets.UTF_8);
+    }
+
+    public static String readFile(File file) throws IOException {
+        InputStream inputStream = new FileInputStream(file);
+        return readInputStream(inputStream, StandardCharsets.UTF_8);
+    }
+
+    public static void writeFile(File file, String body) throws IOException {
+        OutputStream stream = new FileOutputStream(file, false);
+        writeOutputStream(stream, body, StandardCharsets.UTF_8);
+    }
+
+    public static String readMultiString(String stopCode) {
+        Scanner in = new Scanner(System.in);
+        StringBuilder ret = new StringBuilder();
+        String temp = "";
+        while (true) {
+            temp = in.nextLine();
+            if (temp.equals(stopCode)) {
+                break;
+            }
+            ret.append(temp).append('\n');
+        }
+        return ret.toString();
     }
 
     public static Map<String, File> findAllFiles(File directory, Pattern pattern) {

@@ -40,9 +40,18 @@ public class Task {
         if (!matcher.matches()) {
             throw new InvalidTaskDirectoryException(directory);
         }
-        ret.data.setLabNumber(Integer.parseInt(matcher.group(1)));
-        ret.data.setNumber(Integer.parseInt(matcher.group(2)));
-        ret.data.setVariant(Integer.parseInt(matcher.group(3)));
+        TaskData data = new TaskData();
+        data.setLabNumber(Integer.parseInt(matcher.group(1)));
+        data.setNumber(Integer.parseInt(matcher.group(2)));
+        String rawVariant = matcher.group(3);
+        int variant;
+        if (rawVariant == null) {
+            variant = -1;
+        } else {
+            variant = Integer.parseInt(rawVariant);
+        }
+        data.setVariant(variant);
+        ret.data = data;
         File testDirectory = new File(directory.getAbsolutePath() + TEST_DATA);
         if (testDirectory.exists() && testDirectory.isDirectory()) {
             ret.tests = IOUtil.findAllTests(testDirectory);
@@ -63,9 +72,10 @@ public class Task {
         if (!(parent.exists() && parent.isDirectory())) {
             throw new IllegalStateException("Invalid parent directory!");
         }
-        String name = "lab_" + formatNumber(data.labNumber) +
-                "_" + formatNumber(data.number) +
-                "_" + formatNumber(data.variant);
+        String name = "lab_" + formatNumber(data.labNumber) + "_" + formatNumber(data.number);
+        if (data.variant >= 0) {
+            name += "_" + formatNumber(data.variant);
+        }
         File directory = new File(name);
         if (!directory.mkdir()) {
             throw new IllegalStateException("Can't create task directory " + directory);

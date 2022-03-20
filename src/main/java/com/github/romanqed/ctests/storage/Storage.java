@@ -13,7 +13,6 @@ public class Storage {
 
     public <T> void setField(Field<T> field, T value) {
         Objects.requireNonNull(field);
-        Objects.requireNonNull(value);
         fields.put(field.getName(), value);
     }
 

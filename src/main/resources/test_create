@@ -1,1 +1,1 @@
-Создаёт новый тест: create <pos | neg> <out>(*) <args>(*)
+Создаёт новый тест: create <pos | neg> <args>(*)

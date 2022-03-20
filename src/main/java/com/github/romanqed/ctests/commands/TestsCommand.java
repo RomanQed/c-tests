@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@NamedCommand("test")
+@NamedCommand("tests")
 @Help("test")
-public class TestCommand extends ConsoleCommand {
+public class TestsCommand extends ConsoleCommand {
     public static final Field<Draft> DRAFT = new Field<>("DRAFT", Draft.class);
     private static final Menu menu;
 
@@ -118,8 +118,8 @@ class ListCommand extends ConsoleCommand {
             System.out.println("===Positive tests");
             showTests(Utils.positive(tests));
         } else if (type.equals(Utils.NEG)) {
-            System.out.println("===Positive tests");
-            showTests(Utils.positive(tests));
+            System.out.println("===Negative tests");
+            showTests(Utils.negative(tests));
         } else {
             System.out.println("Неверный тип!");
         }
@@ -231,12 +231,11 @@ class CreateCommand extends ConsoleCommand {
     public void handle(List<String> args) throws IOException {
         Task task = storage.get(DirectoryCommand.TASK);
         List<MarkedTest> all = task.getTests();
-        if (args.isEmpty() || args.size() > 3) {
+        if (args.isEmpty() || args.size() > 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        boolean out = args.size() >= 2 && args.get(1).equals(Utils.OUT);
-        boolean arguments = args.size() == 3 && args.get(2).equals(Utils.ARGS);
+        boolean arguments = args.size() == 2 && args.get(1).equals(Utils.ARGS);
         TestType type = TestType.fromName(args.get(0));
         int number = Utils.sort(all, type).size() + 1;
         String pattern = task.getDirectory().getAbsolutePath() + "/func_tests/data/" + type.getName() + "_"
@@ -247,11 +246,9 @@ class CreateCommand extends ConsoleCommand {
         File input = new File(pattern + "in.txt");
         IOUtil.writeFile(input, IOUtil.readMultiString(Utils.STOP_CODE));
         test.setInput(input);
-        if (out) {
-            File output = new File(pattern + "out.txt");
-            IOUtil.writeFile(output, IOUtil.readMultiString(Utils.STOP_CODE));
-            test.setOutput(output);
-        }
+        File output = new File(pattern + "out.txt");
+        IOUtil.writeFile(output, IOUtil.readMultiString(Utils.STOP_CODE));
+        test.setOutput(output);
         if (arguments) {
             File argsFile = new File(pattern + "args.txt");
             IOUtil.writeFile(argsFile, IOUtil.readMultiString(Utils.STOP_CODE));
@@ -270,23 +267,58 @@ class RemoveCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> args) throws IOException {
         List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
         if (args.size() != 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        MarkedTest test = Utils.findTest(all, Integer.parseInt(args.get(1)) - 1, args.get(0));
-        if (test.getInput() != null && test.getInput().delete()) {
-            System.out.println("Входной файл успешно удалён!");
+        TestType type = TestType.fromName(args.get(0));
+        int index = Integer.parseInt(args.get(1)) - 1;
+        List<MarkedTest> typed = Utils.sort(all, type);
+        if (index < 0 || index >= typed.size()) {
+            System.out.println("Неверный индекс!");
+            return;
         }
-        if (test.getOutput() != null && test.getOutput().delete()) {
-            System.out.println("Выходной файл успешно удалён!");
+        MarkedTest toRemove = typed.get(index);
+        boolean check = removeFile(toRemove.getInput());
+        check = check && removeFile(toRemove.getOutput());
+        check = check && removeFile(toRemove.getArguments());
+        if (!check) {
+            System.out.println("Ошибка при удалении!");
+            return;
         }
-        if (test.getArguments() != null && test.getArguments().delete()) {
-            System.out.println("Файл аргументов успешно удалён!");
+        for (int i = index + 1; i < typed.size(); ++i) {
+            MarkedTest test = typed.get(i);
+            test.setNumber(test.getNumber() - 1);
+            File input = test.getInput();
+            File output = test.getOutput();
+            File arguments = test.getArguments();
+            test.setInput(renameTestFile(input));
+            if (output != null) {
+                test.setOutput(renameTestFile(output));
+            }
+            if (arguments != null) {
+                test.setArguments(renameTestFile(arguments));
+            }
         }
-        all.remove(test);
+        all.remove(toRemove);
+    }
+
+    private File renameTestFile(File source) throws IOException {
+        String path = source.getParentFile().getAbsolutePath() + "/";
+        File toFile = new File(path + ParseUtil.decreaseIndex(source.getName()));
+        if (!source.renameTo(toFile)) {
+            throw new IOException("Can't rename test file " + source);
+        }
+        return toFile;
+    }
+
+    private boolean removeFile(File source) {
+        if (source == null) {
+            return true;
+        }
+        return source.delete();
     }
 }
 
@@ -309,10 +341,10 @@ class DraftCommand extends ConsoleCommand {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        Draft draft = storage.get(TestCommand.DRAFT);
+        Draft draft = storage.get(TestsCommand.DRAFT);
         if (draft == null) {
             draft = new Draft();
-            storage.set(TestCommand.DRAFT, draft);
+            storage.set(TestsCommand.DRAFT, draft);
         }
         TestType type = TestType.fromName(args.get(0));
         String range = args.get(1);
@@ -335,7 +367,7 @@ class ReadmeCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) throws IOException {
-        Draft draft = storage.get(TestCommand.DRAFT);
+        Draft draft = storage.get(TestsCommand.DRAFT);
         File directory = storage.get(DirectoryCommand.TASK).getDirectory();
         if (draft == null) {
             System.out.println("Черновик не заполнен!");

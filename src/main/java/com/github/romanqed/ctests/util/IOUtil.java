@@ -44,6 +44,10 @@ public class IOUtil {
     }
 
     public static void writeFile(File file, String body) throws IOException {
+        File parent = file.getParentFile();
+        if (!parent.exists() && !parent.mkdirs()) {
+            throw new IllegalStateException("Can't create file" + file);
+        }
         OutputStream stream = new FileOutputStream(file, false);
         writeOutputStream(stream, body, StandardCharsets.UTF_8);
     }

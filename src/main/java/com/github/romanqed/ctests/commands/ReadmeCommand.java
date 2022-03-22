@@ -35,9 +35,17 @@ public class ReadmeCommand extends ConsoleCommand {
         });
     }
 
+    private final Storage storage = StorageProvider.getStorage();
+
     @Override
     public void handle(List<String> args) {
-
+        Task task = storage.get(DirectoryCommand.TASK);
+        if (task == null || !task.getDirectory().exists()) {
+            System.out.println("Откройте директорию корректно!");
+            storage.remove(DirectoryCommand.TASK);
+            return;
+        }
+        MENU.run();
     }
 }
 

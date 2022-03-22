@@ -24,7 +24,7 @@ public class RunCommand extends ConsoleCommand {
             storage.remove(DirectoryCommand.TASK);
             return;
         }
-        String command = task.getDirectory().getAbsolutePath() + "/app.exe";
+        String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
         List<MarkedTest> positives = Utils.positive(task.getTests());
         List<MarkedTest> negatives = Utils.negative(task.getTests());
         for (MarkedTest test : positives) {

@@ -259,7 +259,7 @@ class CreateCommand extends ConsoleCommand {
         }
         String output;
         if (auto) {
-            String command = task.getDirectory().getAbsolutePath() + "/app.exe" + arguments;
+            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP + arguments;
             ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
             if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {
                 throw new IllegalStateException("The program returned not 0 on a positive test");

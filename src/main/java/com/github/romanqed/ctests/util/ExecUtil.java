@@ -7,7 +7,8 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class ExecUtil {
-    public static long TIMEOUT = 10;
+    public static final long TIMEOUT = 10;
+    public static final String APP = "app.exe";
 
     public static ExecData runProcess(String command, String input) throws IOException, InterruptedException {
         Objects.requireNonNull(command);

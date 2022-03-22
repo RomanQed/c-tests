@@ -1,5 +1,6 @@
 package com.github.romanqed.ctests.commands;
 
+import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
@@ -39,10 +40,10 @@ public class TestsCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) {
-        Task task = storage.get(DirectoryCommand.TASK);
+        Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
-            storage.remove(DirectoryCommand.TASK);
+            storage.remove(Main.TASK);
             return;
         }
         MENU.run();
@@ -112,7 +113,7 @@ class ListCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) {
-        List<MarkedTest> tests = storage.get(DirectoryCommand.TASK).getTests();
+        List<MarkedTest> tests = storage.get(Main.TASK).getTests();
         if (tests.isEmpty()) {
             System.out.println("Тестов не существует!");
             return;
@@ -161,7 +162,7 @@ class InfoCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) throws IOException {
-        List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
+        List<MarkedTest> all = storage.get(Main.TASK).getTests();
         if (all.isEmpty()) {
             System.out.println("Тестов нет!");
             return;
@@ -199,7 +200,7 @@ class EditCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) throws IOException {
-        List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
+        List<MarkedTest> all = storage.get(Main.TASK).getTests();
         if (all.isEmpty()) {
             System.out.println("Тестов нет!");
             return;
@@ -248,7 +249,7 @@ class CreateCommand extends ConsoleCommand {
         }
         boolean needArguments = args.contains(Utils.ARGS);
         boolean auto = args.contains(AUTO);
-        Task task = storage.get(DirectoryCommand.TASK);
+        Task task = storage.get(Main.TASK);
         List<MarkedTest> all = task.getTests();
         MarkedTest test = Utils.generateTest(task, TestType.fromName(args.get(0)), needArguments);
         String input = IOUtil.readMultiString(Utils.STOP_CODE);
@@ -291,7 +292,7 @@ class RemoveCommand extends ConsoleCommand {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
+        List<MarkedTest> all = storage.get(Main.TASK).getTests();
         TestType type = TestType.fromName(args.get(0));
         int index = Integer.parseInt(args.get(1)) - 1;
         List<MarkedTest> typed = Utils.sort(all, type);

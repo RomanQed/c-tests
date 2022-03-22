@@ -1,5 +1,6 @@
 package com.github.romanqed.ctests.commands;
 
+import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
 import com.github.romanqed.ctests.storage.Field;
 import com.github.romanqed.ctests.storage.Storage;
@@ -39,10 +40,10 @@ public class ReadmeCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) {
-        Task task = storage.get(DirectoryCommand.TASK);
+        Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
-            storage.remove(DirectoryCommand.TASK);
+            storage.remove(Main.TASK);
             return;
         }
         MENU.run();
@@ -140,7 +141,7 @@ class ReadmeCreateCommand extends ConsoleCommand {
     @Override
     public void handle(List<String> args) throws IOException {
         Draft draft = storage.get(ReadmeCommand.DRAFT);
-        Task task = storage.get(DirectoryCommand.TASK);
+        Task task = storage.get(Main.TASK);
         File directory = task.getDirectory();
         if (draft == null) {
             System.out.println("Черновик не заполнен!");

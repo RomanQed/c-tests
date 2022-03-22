@@ -1,5 +1,6 @@
 package com.github.romanqed.ctests.commands;
 
+import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
@@ -18,10 +19,10 @@ public class RunCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) throws Exception {
-        Task task = storage.get(DirectoryCommand.TASK);
+        Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
-            storage.remove(DirectoryCommand.TASK);
+            storage.remove(Main.TASK);
             return;
         }
         String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;

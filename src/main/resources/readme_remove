@@ -1,0 +1,2 @@
+Удаляет запись из readme-черновика.
+remove <pos | neg> <number | range>

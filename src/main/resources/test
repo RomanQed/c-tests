@@ -3,7 +3,7 @@
 * Показывает список тестов, если они существуют: list <pos | neg>
 * Выводит информацию о конкретном тесте: info <pos | neg> <number>
 * Перезаписывает существующий тест: edit <pos | neg> <number> [<in | out | args>]
-* Создаёт новый тест: create <pos | neg> <out>(*) <args>(*)
+* Создаёт новый тест: create <pos | neg> <auto>(*) <args>(*)
 * Удаляет существующий тест: remove <pos | neg> <number>
 * Записывает информацию о тесте / диапазоне тестов в "черновик" readme: draft <pos | neg> <number> <message>
 * Создаёт readme из записанного ранее черновика: readme

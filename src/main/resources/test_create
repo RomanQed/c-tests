@@ -1,1 +1,1 @@
-Создаёт новый тест: create <pos | neg> <args>(*)
+Создаёт новый тест: create <pos | neg> <auto>(*) <args>(*)

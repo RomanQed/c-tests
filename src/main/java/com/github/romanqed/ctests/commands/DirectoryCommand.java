@@ -18,22 +18,22 @@ import java.util.Scanner;
 @Help("dir")
 public class DirectoryCommand extends ConsoleCommand {
     static final Field<Task> TASK = new Field<>("TASK", Task.class);
-    private static final Menu menu;
+    private static final Menu MENU;
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();
         commands.add(new OpenCommand());
         commands.add(new ShowCommand());
         commands.add(new InitCommand());
-        menu = new Menu(commands);
-        menu.addCommand(new HelpCommand(menu.getCommands()));
-        menu.addCommand(new MenuCommand(menu.getCommands().keySet()));
+        MENU = new Menu(commands);
+        MENU.addCommand(new HelpCommand(MENU.getCommands()));
+        MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
     }
 
     @Override
     public void handle(List<String> args) {
         System.out.println("Подменю для работы с директорией");
-        menu.run();
+        MENU.run();
     }
 }
 

@@ -8,19 +8,12 @@ public class Test {
     private File output;
     private File arguments;
 
-    private void checkFile(File file) {
-        Objects.requireNonNull(file);
-        if (!(file.isFile() && file.exists())) {
-            throw new IllegalStateException("File " + file + " is invalid");
-        }
-    }
-
     public File getInput() {
         return input;
     }
 
     public void setInput(File input) {
-        checkFile(input);
+        Objects.requireNonNull(input);
         this.input = input;
     }
 
@@ -29,7 +22,7 @@ public class Test {
     }
 
     public void setOutput(File output) {
-        checkFile(output);
+        Objects.requireNonNull(input);
         this.output = output;
     }
 
@@ -38,7 +31,7 @@ public class Test {
     }
 
     public void setArguments(File arguments) {
-        checkFile(arguments);
+        Objects.requireNonNull(input);
         this.arguments = arguments;
     }
 

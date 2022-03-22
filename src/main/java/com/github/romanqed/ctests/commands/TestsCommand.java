@@ -1,25 +1,27 @@
 package com.github.romanqed.ctests.commands;
 
 import com.github.romanqed.ctests.Menu;
-import com.github.romanqed.ctests.storage.Field;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
 import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.tests.TestType;
+import com.github.romanqed.ctests.util.ExecUtil;
 import com.github.romanqed.ctests.util.IOUtil;
 import com.github.romanqed.ctests.util.ParseUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
 import java.util.stream.Collectors;
 
 @NamedCommand("tests")
 @Help("test")
 public class TestsCommand extends ConsoleCommand {
-    public static final Field<Draft> DRAFT = new Field<>("DRAFT", Draft.class);
-    private static final Menu menu;
+    private static final Menu MENU;
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();
@@ -27,16 +29,10 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new InfoCommand());
         commands.add(new EditCommand());
         commands.add(new CreateCommand());
-        commands.add(new DraftCommand());
-        commands.add(new ReadmeCommand());
-        commands.add(new RemoveCommand());
-        menu = new Menu(commands);
-        menu.addCommand(new HelpCommand(menu.getCommands()));
-        menu.addCommand(new MenuCommand(menu.getCommands().keySet()));
-        menu.onExit(() -> {
-            Storage storage = StorageProvider.getStorage();
-            storage.remove(DRAFT);
-        });
+        commands.add(new ReadmeRemoveCommand());
+        MENU = new Menu(commands);
+        MENU.addCommand(new HelpCommand(MENU.getCommands()));
+        MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
     }
 
     private final Storage storage = StorageProvider.getStorage();
@@ -49,7 +45,7 @@ public class TestsCommand extends ConsoleCommand {
             storage.remove(DirectoryCommand.TASK);
             return;
         }
-        menu.run();
+        MENU.run();
     }
 }
 
@@ -60,6 +56,7 @@ class Utils {
     protected static final String OUT = "out";
     protected static final String ARGS = "args";
     protected static final String STOP_CODE = "\\";
+    protected static final Scanner SCANNER = new Scanner(System.in);
 
     protected static List<MarkedTest> sort(List<MarkedTest> all, TestType type) {
         return all.stream().
@@ -88,6 +85,21 @@ class Utils {
             throw new IllegalStateException("Номер теста не существует!");
         }
         return typed.get(number);
+    }
+
+    protected static MarkedTest generateTest(Task task, TestType type, boolean needArguments) {
+        int number = Utils.sort(task.getTests(), type).size() + 1;
+        String pattern = task.getDirectory().getAbsolutePath() + "/func_tests/data/" + type.getName() + "_"
+                + ParseUtil.formatNumber(number) + "_";
+        MarkedTest test = new MarkedTest();
+        test.setType(type);
+        test.setNumber(number);
+        test.setInput(new File(pattern + "in.txt"));
+        test.setOutput(new File(pattern + "out.txt"));
+        if (needArguments) {
+            test.setArguments(new File(pattern + "args.txt"));
+        }
+        return test;
     }
 }
 
@@ -221,6 +233,7 @@ class EditCommand extends ConsoleCommand {
 }
 
 class CreateCommand extends ConsoleCommand {
+    private static final String AUTO = "auto";
     private final Storage storage = StorageProvider.getStorage();
 
     public CreateCommand() {
@@ -228,34 +241,40 @@ class CreateCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
-        Task task = storage.get(DirectoryCommand.TASK);
-        List<MarkedTest> all = task.getTests();
-        if (args.isEmpty() || args.size() > 2) {
+    public void handle(List<String> args) throws IOException, InterruptedException {
+        if (args.isEmpty() || args.size() > 3) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        boolean arguments = args.size() == 2 && args.get(1).equals(Utils.ARGS);
-        TestType type = TestType.fromName(args.get(0));
-        int number = Utils.sort(all, type).size() + 1;
-        String pattern = task.getDirectory().getAbsolutePath() + "/func_tests/data/" + type.getName() + "_"
-                + ParseUtil.formatNumber(number) + "_";
-        MarkedTest test = new MarkedTest();
-        test.setType(type);
-        test.setNumber(number);
-        File input = new File(pattern + "in.txt");
-        IOUtil.writeFile(input, IOUtil.readMultiString(Utils.STOP_CODE));
-        test.setInput(input);
-        File output = new File(pattern + "out.txt");
-        IOUtil.writeFile(output, IOUtil.readMultiString(Utils.STOP_CODE));
-        test.setOutput(output);
-        if (arguments) {
-            File argsFile = new File(pattern + "args.txt");
-            IOUtil.writeFile(argsFile, IOUtil.readMultiString(Utils.STOP_CODE));
-            test.setArguments(argsFile);
+        boolean needArguments = args.contains(Utils.ARGS);
+        boolean auto = args.contains(AUTO);
+        Task task = storage.get(DirectoryCommand.TASK);
+        List<MarkedTest> all = task.getTests();
+        MarkedTest test = Utils.generateTest(task, TestType.fromName(args.get(0)), needArguments);
+        String input = IOUtil.readMultiString(Utils.STOP_CODE);
+        String arguments = " ";
+        if (needArguments) {
+            arguments += Utils.SCANNER.nextLine();
+            IOUtil.writeFile(test.getArguments(), arguments);
         }
+        String output;
+        if (auto) {
+            String command = task.getDirectory().getAbsolutePath() + "/app.exe" + arguments;
+            ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+            if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {
+                throw new IllegalStateException("The program returned not 0 on a positive test");
+            }
+            if (test.getType() == TestType.NEGATIVE && data.getCode() == 0) {
+                throw new IllegalStateException("The program returned 0 on a negative test");
+            }
+            output = data.getOutput();
+        } else {
+            output = IOUtil.readMultiString(Utils.STOP_CODE);
+        }
+        IOUtil.writeFile(test.getInput(), input);
+        IOUtil.writeFile(test.getOutput(), output);
         all.add(test);
-        System.out.println("Номер нового теста: " + number);
+        System.out.println("Номер нового теста: " + test.getNumber());
     }
 }
 
@@ -268,11 +287,11 @@ class RemoveCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> args) throws IOException {
-        List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
         if (args.size() != 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
+        List<MarkedTest> all = storage.get(DirectoryCommand.TASK).getTests();
         TestType type = TestType.fromName(args.get(0));
         int index = Integer.parseInt(args.get(1)) - 1;
         List<MarkedTest> typed = Utils.sort(all, type);
@@ -319,93 +338,5 @@ class RemoveCommand extends ConsoleCommand {
             return true;
         }
         return source.delete();
-    }
-}
-
-class Draft {
-    Map<String, String> positive = new HashMap<>();
-    Map<String, String> negative = new HashMap<>();
-}
-
-class DraftCommand extends ConsoleCommand {
-    private static final String PATTERN = "<p>(\\d): \\m</p>";
-    private final Storage storage = StorageProvider.getStorage();
-
-    public DraftCommand() {
-        super("draft", "test_draft");
-    }
-
-    @Override
-    public void handle(List<String> args) {
-        if (args.size() != 3) {
-            System.out.println("Неверное количество аргументов!");
-            return;
-        }
-        Draft draft = storage.get(TestsCommand.DRAFT);
-        if (draft == null) {
-            draft = new Draft();
-            storage.set(TestsCommand.DRAFT, draft);
-        }
-        TestType type = TestType.fromName(args.get(0));
-        String range = args.get(1);
-        String message = PATTERN.replace("\\d", args.get(1)).replace("\\m", args.get(2));
-        if (type == TestType.POSITIVE) {
-            draft.positive.put(range, message);
-        } else {
-            draft.negative.put(range, message);
-        }
-    }
-}
-
-class ReadmeCommand extends ConsoleCommand {
-    private final static String NO_TESTS = "<p>Тестов нет</p>";
-    private final Storage storage = StorageProvider.getStorage();
-
-    public ReadmeCommand() {
-        super("readme", "test_readme");
-    }
-
-    @Override
-    public void handle(List<String> args) throws IOException {
-        Draft draft = storage.get(TestsCommand.DRAFT);
-        File directory = storage.get(DirectoryCommand.TASK).getDirectory();
-        if (draft == null) {
-            System.out.println("Черновик не заполнен!");
-            return;
-        }
-        String pattern = IOUtil.readResourceFile("readme_pattern");
-        if (draft.positive.isEmpty()) {
-            pattern = pattern.replace("\\p", NO_TESTS);
-        } else {
-            pattern = pattern.replace("\\p", draftToString(draft.positive));
-        }
-        if (draft.negative.isEmpty()) {
-            pattern = pattern.replace("\\n", NO_TESTS);
-        } else {
-            pattern = pattern.replace("\\n", draftToString(draft.negative));
-        }
-        File readme = new File(directory.getAbsolutePath() + "/func_tests/readme.md");
-        IOUtil.writeFile(readme, pattern);
-    }
-
-    private int parseRange(String rawRange) {
-        rawRange = rawRange.trim().replaceAll("\\s+", " ");
-        int pos = rawRange.indexOf('-');
-        if (pos < 0) {
-            return Integer.parseInt(rawRange);
-        }
-        return Integer.parseInt(rawRange.substring(0, pos));
-    }
-
-    private String draftToString(Map<String, String> draft) {
-        Set<Map.Entry<String, String>> entries = draft.entrySet();
-        List<Map.Entry<String, String>> list = entries.stream().
-                sorted(Comparator.comparingInt(left -> parseRange(left.getKey()))).
-                collect(Collectors.toList());
-        StringBuilder ret = new StringBuilder();
-        for (Map.Entry<String, String> entry : list) {
-            ret.append(entry.getValue()).append('\n');
-        }
-        return ret.toString();
     }
 }

@@ -1,0 +1,6 @@
+Подменю, отвечающее за генерацию readme.
+Открывается, только если есть корректная директория!
+* add <pos | neg> <number | range> <message>
+* remove <pos | neg> <number | range>
+* create
+* clear

@@ -22,11 +22,19 @@ public class IOUtil {
         return ret;
     }
 
+    public static String readInputStream(InputStream stream) throws IOException {
+        return readInputStream(stream, StandardCharsets.UTF_8);
+    }
+
     public static void writeOutputStream(OutputStream stream, String body, Charset charset) throws IOException {
         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(stream, charset));
         writer.write(body);
         writer.flush();
         writer.close();
+    }
+
+    public static void writeOutputStream(OutputStream stream, String body) throws IOException {
+        writeOutputStream(stream, body, StandardCharsets.UTF_8);
     }
 
     public static String readResourceFile(String name) throws IOException {
@@ -55,7 +63,7 @@ public class IOUtil {
     public static String readMultiString(String stopCode) {
         Scanner in = new Scanner(System.in);
         StringBuilder ret = new StringBuilder();
-        String temp = "";
+        String temp;
         while (true) {
             temp = in.nextLine();
             if (temp.equals(stopCode)) {

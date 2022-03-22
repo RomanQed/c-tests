@@ -29,7 +29,7 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new InfoCommand());
         commands.add(new EditCommand());
         commands.add(new CreateCommand());
-        commands.add(new ReadmeRemoveCommand());
+        commands.add(new RemoveCommand());
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));

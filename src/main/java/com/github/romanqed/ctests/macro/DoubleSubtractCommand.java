@@ -2,6 +2,7 @@ package com.github.romanqed.ctests.macro;
 
 import java.util.List;
 
+@NamedMacro("d_sub")
 public class DoubleSubtractCommand extends MacroCommand {
     @Override
     public String execute(List<String> arguments) {

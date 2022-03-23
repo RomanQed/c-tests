@@ -55,7 +55,7 @@ public class TestsCommand extends ConsoleCommand {
     }
 }
 
-class Utils {
+class Util {
     protected static final String POS = "pos";
     protected static final String NEG = "neg";
     protected static final String IN = "in";
@@ -86,7 +86,7 @@ class Utils {
         } catch (Exception e) {
             throw new IllegalStateException("Не существующий тип!");
         }
-        List<MarkedTest> typed = Utils.sort(all, type);
+        List<MarkedTest> typed = Util.sort(all, type);
         if (number < 0 || number >= typed.size()) {
             throw new IllegalStateException("Номер теста не существует!");
         }
@@ -94,7 +94,7 @@ class Utils {
     }
 
     protected static MarkedTest generateTest(Task task, TestType type, boolean needArguments) {
-        int number = Utils.sort(task.getTests(), type).size() + 1;
+        int number = Util.sort(task.getTests(), type).size() + 1;
         String pattern = task.getDirectory().getAbsolutePath() + "/func_tests/data/" + type.getName() + "_"
                 + ParseUtil.formatNumber(number) + "_";
         MarkedTest test = new MarkedTest();
@@ -129,15 +129,15 @@ class ListCommand extends ConsoleCommand {
         }
         if (type == null) {
             System.out.println("===Positive tests");
-            showTests(Utils.positive(tests));
+            showTests(Util.positive(tests));
             System.out.println("===Negative tests");
-            showTests(Utils.negative(tests));
-        } else if (type.equals(Utils.POS)) {
+            showTests(Util.negative(tests));
+        } else if (type.equals(Util.POS)) {
             System.out.println("===Positive tests");
-            showTests(Utils.positive(tests));
-        } else if (type.equals(Utils.NEG)) {
+            showTests(Util.positive(tests));
+        } else if (type.equals(Util.NEG)) {
             System.out.println("===Negative tests");
-            showTests(Utils.negative(tests));
+            showTests(Util.negative(tests));
         } else {
             System.out.println("Неверный тип!");
         }
@@ -176,7 +176,7 @@ class InfoCommand extends ConsoleCommand {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        MarkedTest test = Utils.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
+        MarkedTest test = Util.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
         String in = IOUtil.readFile(test.getInput());
         String out = null;
         if (test.getOutput() != null) {
@@ -214,19 +214,19 @@ class EditCommand extends ConsoleCommand {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        MarkedTest test = Utils.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
+        MarkedTest test = Util.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
         for (int i = 2; i < arguments.size(); ++i) {
             String type = arguments.get(i);
-            String body = IOUtil.readMultiString(Utils.STOP_CODE);
+            String body = IOUtil.readMultiString(Util.STOP_CODE);
             File file;
             switch (type) {
-                case Utils.IN:
+                case Util.IN:
                     file = test.getInput();
                     break;
-                case Utils.OUT:
+                case Util.OUT:
                     file = test.getOutput();
                     break;
-                case Utils.ARGS:
+                case Util.ARGS:
                     file = test.getArguments();
                     break;
                 default:
@@ -252,15 +252,15 @@ class CreateCommand extends ConsoleCommand {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        boolean needArguments = arguments.contains(Utils.ARGS);
+        boolean needArguments = arguments.contains(Util.ARGS);
         boolean auto = arguments.contains(AUTO);
         Task task = storage.get(Main.TASK);
         List<MarkedTest> all = task.getTests();
-        MarkedTest test = Utils.generateTest(task, TestType.fromName(arguments.get(0)), needArguments);
-        String input = IOUtil.readMultiString(Utils.STOP_CODE);
+        MarkedTest test = Util.generateTest(task, TestType.fromName(arguments.get(0)), needArguments);
+        String input = IOUtil.readMultiString(Util.STOP_CODE);
         String testArguments = " ";
         if (needArguments) {
-            testArguments += Utils.SCANNER.nextLine();
+            testArguments += Util.SCANNER.nextLine();
             IOUtil.writeFile(test.getArguments(), testArguments);
         }
         String output;
@@ -275,7 +275,7 @@ class CreateCommand extends ConsoleCommand {
             }
             output = data.getOutput();
         } else {
-            output = IOUtil.readMultiString(Utils.STOP_CODE);
+            output = IOUtil.readMultiString(Util.STOP_CODE);
         }
         IOUtil.writeFile(test.getInput(), input);
         IOUtil.writeFile(test.getOutput(), output);
@@ -300,7 +300,7 @@ class RemoveCommand extends ConsoleCommand {
         List<MarkedTest> all = storage.get(Main.TASK).getTests();
         TestType type = TestType.fromName(arguments.get(0));
         int index = Integer.parseInt(arguments.get(1)) - 1;
-        List<MarkedTest> typed = Utils.sort(all, type);
+        List<MarkedTest> typed = Util.sort(all, type);
         if (index < 0 || index >= typed.size()) {
             System.out.println("Неверный индекс!");
             return;
@@ -356,7 +356,7 @@ class TemplateCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> arguments) {
-        String template = IOUtil.readMultiString(Utils.STOP_CODE);
+        String template = IOUtil.readMultiString(Util.STOP_CODE);
         storage.set(TestsCommand.MACRO_TEMPLATE, template);
     }
 }
@@ -384,7 +384,7 @@ class GenerateCommand extends ConsoleCommand {
         List<MarkedTest> tests = task.getTests();
         String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
         for (int i = 0; i < count; ++i) {
-            MarkedTest test = Utils.generateTest(task, TestType.POSITIVE, false);
+            MarkedTest test = Util.generateTest(task, TestType.POSITIVE, false);
             String input = MacroUtil.parseMultiLine(template);
             ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
             if (data.getCode() != 0) {

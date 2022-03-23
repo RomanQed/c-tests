@@ -26,8 +26,8 @@ public class RunCommand extends ConsoleCommand {
             return;
         }
         String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
-        List<MarkedTest> positives = Utils.positive(task.getTests());
-        List<MarkedTest> negatives = Utils.negative(task.getTests());
+        List<MarkedTest> positives = Util.positive(task.getTests());
+        List<MarkedTest> negatives = Util.negative(task.getTests());
         for (MarkedTest test : positives) {
             if (runTest(command, test)) {
                 break;

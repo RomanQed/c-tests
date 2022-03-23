@@ -2,6 +2,8 @@ package com.github.romanqed.ctests.commands;
 
 import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
+import com.github.romanqed.ctests.macro.MacroUtil;
+import com.github.romanqed.ctests.storage.Field;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
@@ -23,6 +25,7 @@ import java.util.stream.Collectors;
 @Help("test")
 public class TestsCommand extends ConsoleCommand {
     private static final Menu MENU;
+    protected static final Field<String> MACRO_TEMPLATE = new Field<>("MACRO_TEMPLATE", String.class);
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();
@@ -31,6 +34,8 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new EditCommand());
         commands.add(new CreateCommand());
         commands.add(new RemoveCommand());
+        commands.add(new TemplateCommand());
+        commands.add(new GenerateCommand());
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
@@ -339,5 +344,56 @@ class RemoveCommand extends ConsoleCommand {
             return true;
         }
         return source.delete();
+    }
+}
+
+class TemplateCommand extends ConsoleCommand {
+    private final Storage storage = StorageProvider.getStorage();
+
+    public TemplateCommand() {
+        super("template", "test_template");
+    }
+
+    @Override
+    public void handle(List<String> arguments) {
+        String template = IOUtil.readMultiString(Utils.STOP_CODE);
+        storage.set(TestsCommand.MACRO_TEMPLATE, template);
+    }
+}
+
+class GenerateCommand extends ConsoleCommand {
+    private final Storage storage = StorageProvider.getStorage();
+
+    public GenerateCommand() {
+        super("generate", "test_generate");
+    }
+
+    @Override
+    public void handle(List<String> arguments) throws Exception {
+        if (arguments.size() != 1) {
+            System.out.println("Неверное количество аргументов!");
+            return;
+        }
+        String template = storage.get(TestsCommand.MACRO_TEMPLATE);
+        if (template == null) {
+            System.out.println("Шаблон для тестов не задан!");
+            return;
+        }
+        int count = Integer.parseInt(arguments.get(0));
+        Task task = storage.get(Main.TASK);
+        List<MarkedTest> tests = task.getTests();
+        String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
+        for (int i = 0; i < count; ++i) {
+            MarkedTest test = Utils.generateTest(task, TestType.POSITIVE, false);
+            String input = MacroUtil.parseMultiLine(template);
+            ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+            if (data.getCode() != 0) {
+                throw new IllegalStateException("The program returned not 0 on a positive test");
+            }
+            IOUtil.writeFile(test.getInput(), input);
+            IOUtil.writeFile(test.getOutput(), data.getOutput());
+            tests.add(test);
+        }
+        System.out.println("Успешно добавлено " + count + " тестов!");
     }
 }

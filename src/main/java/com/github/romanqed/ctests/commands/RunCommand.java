@@ -18,7 +18,7 @@ public class RunCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) throws Exception {
+    public void handle(List<String> arguments) throws Exception {
         Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");

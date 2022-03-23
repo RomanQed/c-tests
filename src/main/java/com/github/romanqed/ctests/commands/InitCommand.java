@@ -17,12 +17,12 @@ public class InitCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) throws Exception {
-        if (args.size() != 1) {
+    public void handle(List<String> arguments) throws Exception {
+        if (arguments.size() != 1) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        String path = args.get(0);
+        String path = arguments.get(0);
         File parent = new File(path);
         if (!(parent.exists() && parent.isDirectory())) {
             System.out.println("Невозможно создать рабочую папку по такому пути!");

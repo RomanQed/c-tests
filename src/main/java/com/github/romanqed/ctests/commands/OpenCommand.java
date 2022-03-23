@@ -16,12 +16,12 @@ public class OpenCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) throws InvalidTestException, InvalidTaskDirectoryException {
-        if (args.size() != 1) {
+    public void handle(List<String> arguments) throws InvalidTestException, InvalidTaskDirectoryException {
+        if (arguments.size() != 1) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        String path = args.get(0);
+        String path = arguments.get(0);
         File directory = new File(path);
         Task task = Task.openDirectory(directory);
         storage.set(Main.TASK, task);

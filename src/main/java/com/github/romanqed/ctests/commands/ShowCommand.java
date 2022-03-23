@@ -14,7 +14,7 @@ public class ShowCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> arguments) {
         Task task = storage.get(Main.TASK);
         if (task == null) {
             System.out.println("Нет открытой директории!");

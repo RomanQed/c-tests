@@ -39,7 +39,7 @@ public class TestsCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> arguments) {
         Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
@@ -161,32 +161,32 @@ class InfoCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
+    public void handle(List<String> arguments) throws IOException {
         List<MarkedTest> all = storage.get(Main.TASK).getTests();
         if (all.isEmpty()) {
             System.out.println("Тестов нет!");
             return;
         }
-        if (args.size() != 2) {
+        if (arguments.size() != 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        MarkedTest test = Utils.findTest(all, Integer.parseInt(args.get(1)) - 1, args.get(0));
+        MarkedTest test = Utils.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
         String in = IOUtil.readFile(test.getInput());
         String out = null;
         if (test.getOutput() != null) {
             out = IOUtil.readFile(test.getOutput());
         }
-        String arguments = null;
+        String testArguments = null;
         if (test.getArguments() != null) {
-            arguments = IOUtil.readFile(test.getArguments());
+            testArguments = IOUtil.readFile(test.getArguments());
         }
         System.out.println("Входные данные:\n" + in);
         if (out != null) {
             System.out.println("Выходные данные:\n" + out);
         }
-        if (arguments != null) {
-            System.out.println("Аргументы:\n" + arguments);
+        if (testArguments != null) {
+            System.out.println("Аргументы:\n" + testArguments);
         }
     }
 }
@@ -199,19 +199,19 @@ class EditCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
+    public void handle(List<String> arguments) throws IOException {
         List<MarkedTest> all = storage.get(Main.TASK).getTests();
         if (all.isEmpty()) {
             System.out.println("Тестов нет!");
             return;
         }
-        if (args.size() < 3) {
+        if (arguments.size() < 3) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        MarkedTest test = Utils.findTest(all, Integer.parseInt(args.get(1)) - 1, args.get(0));
-        for (int i = 2; i < args.size(); ++i) {
-            String type = args.get(i);
+        MarkedTest test = Utils.findTest(all, Integer.parseInt(arguments.get(1)) - 1, arguments.get(0));
+        for (int i = 2; i < arguments.size(); ++i) {
+            String type = arguments.get(i);
             String body = IOUtil.readMultiString(Utils.STOP_CODE);
             File file;
             switch (type) {
@@ -242,25 +242,25 @@ class CreateCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException, InterruptedException {
-        if (args.isEmpty() || args.size() > 3) {
+    public void handle(List<String> arguments) throws IOException, InterruptedException {
+        if (arguments.isEmpty() || arguments.size() > 3) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        boolean needArguments = args.contains(Utils.ARGS);
-        boolean auto = args.contains(AUTO);
+        boolean needArguments = arguments.contains(Utils.ARGS);
+        boolean auto = arguments.contains(AUTO);
         Task task = storage.get(Main.TASK);
         List<MarkedTest> all = task.getTests();
-        MarkedTest test = Utils.generateTest(task, TestType.fromName(args.get(0)), needArguments);
+        MarkedTest test = Utils.generateTest(task, TestType.fromName(arguments.get(0)), needArguments);
         String input = IOUtil.readMultiString(Utils.STOP_CODE);
-        String arguments = " ";
+        String testArguments = " ";
         if (needArguments) {
-            arguments += Utils.SCANNER.nextLine();
-            IOUtil.writeFile(test.getArguments(), arguments);
+            testArguments += Utils.SCANNER.nextLine();
+            IOUtil.writeFile(test.getArguments(), testArguments);
         }
         String output;
         if (auto) {
-            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP + arguments;
+            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP + testArguments;
             ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
             if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {
                 throw new IllegalStateException("The program returned not 0 on a positive test");
@@ -287,14 +287,14 @@ class RemoveCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
-        if (args.size() != 2) {
+    public void handle(List<String> arguments) throws IOException {
+        if (arguments.size() != 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
         List<MarkedTest> all = storage.get(Main.TASK).getTests();
-        TestType type = TestType.fromName(args.get(0));
-        int index = Integer.parseInt(args.get(1)) - 1;
+        TestType type = TestType.fromName(arguments.get(0));
+        int index = Integer.parseInt(arguments.get(1)) - 1;
         List<MarkedTest> typed = Utils.sort(all, type);
         if (index < 0 || index >= typed.size()) {
             System.out.println("Неверный индекс!");
@@ -313,13 +313,13 @@ class RemoveCommand extends ConsoleCommand {
             test.setNumber(test.getNumber() - 1);
             File input = test.getInput();
             File output = test.getOutput();
-            File arguments = test.getArguments();
+            File testArguments = test.getArguments();
             test.setInput(renameTestFile(input));
             if (output != null) {
                 test.setOutput(renameTestFile(output));
             }
-            if (arguments != null) {
-                test.setArguments(renameTestFile(arguments));
+            if (testArguments != null) {
+                test.setArguments(renameTestFile(testArguments));
             }
         }
         all.remove(toRemove);

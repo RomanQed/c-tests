@@ -39,7 +39,7 @@ public class ReadmeCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> arguments) {
         Task task = storage.get(Main.TASK);
         if (task == null || !task.getDirectory().exists()) {
             System.out.println("Откройте директорию корректно!");
@@ -64,8 +64,8 @@ class AddCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) {
-        if (args.size() != 3) {
+    public void handle(List<String> arguments) {
+        if (arguments.size() != 3) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
@@ -74,9 +74,9 @@ class AddCommand extends ConsoleCommand {
             draft = new Draft();
             storage.set(ReadmeCommand.DRAFT, draft);
         }
-        TestType type = TestType.fromName(args.get(0));
-        String range = args.get(1);
-        String message = PATTERN.replace("\\d", args.get(1)).replace("\\m", args.get(2));
+        TestType type = TestType.fromName(arguments.get(0));
+        String range = arguments.get(1);
+        String message = PATTERN.replace("\\d", arguments.get(1)).replace("\\m", arguments.get(2));
         if (type == TestType.POSITIVE) {
             draft.positive.put(range, message);
         } else {
@@ -93,8 +93,8 @@ class ReadmeRemoveCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws Exception {
-        if (args.size() != 2) {
+    public void handle(List<String> arguments) throws Exception {
+        if (arguments.size() != 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
@@ -103,8 +103,8 @@ class ReadmeRemoveCommand extends ConsoleCommand {
             System.out.println("Черновик не заполнен!");
             return;
         }
-        TestType type = TestType.fromName(args.get(0));
-        String range = args.get(1);
+        TestType type = TestType.fromName(arguments.get(0));
+        String range = arguments.get(1);
         if (type == TestType.POSITIVE) {
             draft.positive.remove(range);
         } else {
@@ -121,7 +121,7 @@ class ClearCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws Exception {
+    public void handle(List<String> arguments) throws Exception {
         if (storage.get(ReadmeCommand.DRAFT) == null) {
             System.out.println("Черновик не заполнен!");
             return;
@@ -139,7 +139,7 @@ class ReadmeCreateCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
+    public void handle(List<String> arguments) throws IOException {
         Draft draft = storage.get(ReadmeCommand.DRAFT);
         Task task = storage.get(Main.TASK);
         File directory = task.getDirectory();

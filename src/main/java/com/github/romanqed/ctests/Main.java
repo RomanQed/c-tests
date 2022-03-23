@@ -14,7 +14,7 @@ public class Main {
     public static final Field<Task> TASK = new Field<>("TASK", Task.class);
 
     public static void main(String[] args) throws Exception {
-        List<ConsoleCommand> found = ReflectionUtil.findAllCommands();
+        List<ConsoleCommand> found = ReflectionUtil.findAllConsoleCommands();
         Menu menu = new Menu(found);
         menu.addCommand(new HelpCommand(menu.getCommands()));
         menu.addCommand(new MenuCommand(menu.getCommands().keySet()));

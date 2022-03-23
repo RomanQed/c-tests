@@ -9,14 +9,14 @@ import java.util.List;
 @Help("cat")
 public class CatCommand extends ConsoleCommand {
     @Override
-    public void handle(List<String> args) throws IOException {
-        if (args.size() != 1) {
+    public void handle(List<String> arguments) throws IOException {
+        if (arguments.size() != 1) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
         int count;
         try {
-            count = Integer.parseInt(args.get(0));
+            count = Integer.parseInt(arguments.get(0));
         } catch (Exception e) {
             System.out.println("Некорректный аргумент!");
             return;

@@ -16,12 +16,12 @@ public class HelpCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) throws IOException {
-        if (args.size() != 1) {
+    public void handle(List<String> arguments) throws IOException {
+        if (arguments.size() != 1) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        ConsoleCommand command = commands.get(args.get(0));
+        ConsoleCommand command = commands.get(arguments.get(0));
         if (command == null) {
             System.out.println("Команда не найдена!");
             return;

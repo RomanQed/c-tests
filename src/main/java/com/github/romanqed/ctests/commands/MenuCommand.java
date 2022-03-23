@@ -19,7 +19,7 @@ public class MenuCommand extends ConsoleCommand {
     }
 
     @Override
-    public void handle(List<String> args) {
+    public void handle(List<String> arguments) {
         System.out.println("Доступные команды:");
         System.out.println(menu);
     }

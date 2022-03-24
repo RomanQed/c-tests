@@ -12,6 +12,7 @@ public class MacroCommand extends ConsoleCommand {
     @Override
     public void handle(List<String> arguments) throws Exception {
         String template = IOUtil.readMultiString(Util.STOP_CODE);
+        System.out.println("Результат подстановки:");
         System.out.println(MacroUtil.parseMultiLine(template));
     }
 }

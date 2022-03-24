@@ -39,6 +39,7 @@ public class TestsCommand extends ConsoleCommand {
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
+        MENU.onExit(() -> StorageProvider.getStorage().remove(MACRO_TEMPLATE));
     }
 
     private final Storage storage = StorageProvider.getStorage();

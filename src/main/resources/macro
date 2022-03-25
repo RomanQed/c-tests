@@ -1,1 +1,46 @@
 Считывает с консоли многострочный макрос и затем исполняет его.
+macro <save | load>
+save - считать и исполнить макрос, затем сохранить его
+load - загрузить сохранённый макрос, затем выполнить его
+
+Краткий справочник по макро-языку:
+{!name:value} - объявление переменной
+{%name} - подстановка переменной
+{/name:arguments} - запуск команды name с аргументами arguments,
+результат выполнения будет подставлен на место команды.
+
+Существующие команды:
+* Арифметика
+    - Double
+    {/d_sum:a b} a + b
+    {/d_sub:a b} a - b
+    {/d_mul:a b} a * b
+    {/d_div:a b} a / b
+    - Int
+    {/i_sum:a b} a + b
+    {/i_sub:a b} a - b
+    {/i_mul:a b} a * b
+    {/i_div:a b} a / b
+    {/mod:a b} a % b
+* Сравнения
+    - Double
+    {/de:a b} a == b
+    {/dg:a b} a > b
+    {/dl:a b} a < b
+    - Int
+    {/ie:a b} a == b
+    {/ig:a b} a > b
+    {/il:a b} a < b
+    - Common
+    {/e:a b} a == b
+* Логика
+    {/not:a} !a
+    {/and:a b} a && b
+    {/or:a b} a || b
+    {/if:condition then else} if (condition) then (then) else (else)
+* Примитивные генераторы
+    {/int:left right}
+    {/double:left right}
+    {/char:left right}
+* Генератор массивов
+    {/arr:<Примитивный генератор> length <Параметры генератора>}

@@ -13,6 +13,6 @@ public class CharCommand extends MacroCommand {
         int left = arguments.get(0).charAt(0);
         int right = arguments.get(1).charAt(0);
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        return "" + Character.forDigit(random.nextInt(left, right), 10);
+        return "" + ((char) random.nextInt(left, right));
     }
 }

@@ -1,0 +1,19 @@
+package com.github.romanqed.ctests.macro.arithmetic;
+
+import com.github.romanqed.ctests.macro.MacroCommand;
+import com.github.romanqed.ctests.macro.NamedMacro;
+
+import java.util.List;
+
+@NamedMacro("mod")
+public class ModCommand extends MacroCommand {
+    @Override
+    public String execute(List<String> arguments) {
+        if (arguments.size() != 2) {
+            throw new IllegalArgumentException("Invalid mod command arguments!");
+        }
+        int left = Integer.parseInt(arguments.get(0));
+        int right = Integer.parseInt(arguments.get(1));
+        return Integer.toString(left % right);
+    }
+}

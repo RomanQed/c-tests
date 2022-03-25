@@ -11,7 +11,7 @@ public class CharCommand extends MacroCommand {
             throw new IllegalArgumentException("Invalid double command arguments!");
         }
         int left = arguments.get(0).charAt(0);
-        int right = arguments.get(1).charAt(1);
+        int right = arguments.get(1).charAt(0);
         ThreadLocalRandom random = ThreadLocalRandom.current();
         return "" + Character.forDigit(random.nextInt(left, right), 10);
     }

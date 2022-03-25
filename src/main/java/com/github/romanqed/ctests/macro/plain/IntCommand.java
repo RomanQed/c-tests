@@ -1,9 +1,14 @@
-package com.github.romanqed.ctests.macro;
+package com.github.romanqed.ctests.macro.plain;
+
+import com.github.romanqed.ctests.macro.Array;
+import com.github.romanqed.ctests.macro.MacroCommand;
+import com.github.romanqed.ctests.macro.NamedMacro;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @NamedMacro("int")
+@Array("int")
 public class IntCommand extends MacroCommand {
 
     @Override

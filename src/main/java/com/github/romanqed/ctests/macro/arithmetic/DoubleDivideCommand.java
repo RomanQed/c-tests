@@ -1,4 +1,7 @@
-package com.github.romanqed.ctests.macro;
+package com.github.romanqed.ctests.macro.arithmetic;
+
+import com.github.romanqed.ctests.macro.MacroCommand;
+import com.github.romanqed.ctests.macro.NamedMacro;
 
 import java.util.List;
 

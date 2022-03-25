@@ -1,11 +1,15 @@
-package com.github.romanqed.ctests.macro;
+package com.github.romanqed.ctests.macro.plain;
+
+import com.github.romanqed.ctests.macro.Array;
+import com.github.romanqed.ctests.macro.MacroCommand;
+import com.github.romanqed.ctests.macro.NamedMacro;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @NamedMacro("double")
+@Array("double")
 public class DoubleCommand extends MacroCommand {
-
     @Override
     public String execute(List<String> arguments) {
         if (arguments.size() != 2) {
@@ -13,6 +17,7 @@ public class DoubleCommand extends MacroCommand {
         }
         double left = Double.parseDouble(arguments.get(0));
         double right = Double.parseDouble(arguments.get(1));
-        return Double.toString(ThreadLocalRandom.current().nextDouble(left, right));
+        double ret = ThreadLocalRandom.current().nextDouble(left, right);
+        return String.format("%.6f", ret).replace(',', '.');
     }
 }

@@ -24,8 +24,8 @@ import java.util.stream.Collectors;
 @NamedCommand("tests")
 @Help("test")
 public class TestsCommand extends ConsoleCommand {
-    private static final Menu MENU;
     protected static final Field<String> MACRO_TEMPLATE = new Field<>("MACRO_TEMPLATE", String.class);
+    private static final Menu MENU;
 
     static {
         List<ConsoleCommand> commands = new LinkedList<>();

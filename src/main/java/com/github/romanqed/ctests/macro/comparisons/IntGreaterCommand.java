@@ -9,7 +9,7 @@ import java.util.List;
 public class IntGreaterCommand extends MacroCommand {
 
     @Override
-    public String execute(List<String> arguments) throws Exception {
+    public String execute(List<String> arguments) {
         if (arguments.size() != 2) {
             throw new IllegalArgumentException("Invalid greater command arguments!");
         }

@@ -1,6 +1,7 @@
 package com.github.romanqed.ctests.macro;
 
 import com.github.romanqed.jutils.util.Action;
+import com.github.romanqed.jutils.util.Checks;
 
 import java.util.*;
 
@@ -29,7 +30,7 @@ class MacroProcessor implements Action<Macro, String> {
         MacroType type = macro.getType();
         List<String> arguments = macro.getArguments();
         if (type == MacroType.SUBSTITUTION) {
-            return Objects.requireNonNull(variables.get(macro.getName()));
+            return Checks.requireNonNullElse(variables.get(macro.getName()), "");
         }
         if (type == MacroType.DECLARE) {
             if (arguments.isEmpty()) {
@@ -53,11 +54,6 @@ class MacroProcessor implements Action<Macro, String> {
             if (Macro.isMacro(argument)) {
                 Macro toProcess = Macro.parse(argument);
                 argument = execute(toProcess);
-            }
-            if (argument.isEmpty()) {
-                arguments.remove(i);
-                --i;
-                continue;
             }
             arguments.set(i, argument);
         }

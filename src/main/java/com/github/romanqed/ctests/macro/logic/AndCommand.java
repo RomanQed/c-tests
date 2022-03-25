@@ -8,7 +8,7 @@ import java.util.List;
 @NamedMacro("and")
 public class AndCommand extends MacroCommand {
     @Override
-    public String execute(List<String> arguments) throws Exception {
+    public String execute(List<String> arguments) {
         if (arguments.size() != 2) {
             throw new IllegalArgumentException("Invalid and command arguments!");
         }

@@ -8,7 +8,7 @@ import java.util.List;
 @NamedMacro("not")
 public class NotCommand extends MacroCommand {
     @Override
-    public String execute(List<String> arguments) throws Exception {
+    public String execute(List<String> arguments) {
         if (arguments.size() != 1) {
             throw new IllegalArgumentException("Invalid not command arguments!");
         }

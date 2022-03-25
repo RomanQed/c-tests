@@ -8,7 +8,7 @@ import java.util.List;
 @NamedMacro("or")
 public class OrCommand extends MacroCommand {
     @Override
-    public String execute(List<String> arguments) throws Exception {
+    public String execute(List<String> arguments) {
         if (arguments.size() != 2) {
             throw new IllegalArgumentException("Invalid or command arguments!");
         }

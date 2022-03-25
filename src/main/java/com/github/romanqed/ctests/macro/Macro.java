@@ -1,5 +1,6 @@
 package com.github.romanqed.ctests.macro;
 
+import com.github.romanqed.ctests.util.InvalidBracketException;
 import com.github.romanqed.ctests.util.ParseUtil;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Macro {
         this.arguments = Objects.requireNonNull(arguments);
     }
 
-    public static Macro parse(String rawMacro) {
+    public static Macro parse(String rawMacro) throws InvalidBracketException {
         Matcher matcher = MacroUtil.MACRO.matcher(rawMacro);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid macro string: " + rawMacro);
@@ -30,7 +31,7 @@ public class Macro {
         if (rawArguments == null) {
             arguments = new ArrayList<>();
         } else {
-            arguments = ParseUtil.parseArguments(rawArguments);
+            arguments = ParseUtil.parseBrackets(rawArguments);
         }
         return new Macro(type, name, arguments);
     }

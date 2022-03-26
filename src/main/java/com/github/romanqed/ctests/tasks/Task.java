@@ -69,7 +69,8 @@ public class Task {
         if (!(parent.exists() && parent.isDirectory())) {
             throw new IllegalStateException("Invalid parent directory!");
         }
-        String name = "lab_" + ParseUtil.formatNumber(data.labNumber) + "_" + ParseUtil.formatNumber(data.number);
+        String name = parent.getAbsolutePath() +
+                "/lab_" + ParseUtil.formatNumber(data.labNumber) + "_" + ParseUtil.formatNumber(data.number);
         if (data.variant >= 0) {
             name += "_" + ParseUtil.formatNumber(data.variant);
         }

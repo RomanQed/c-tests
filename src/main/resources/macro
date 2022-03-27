@@ -44,8 +44,9 @@ load - загрузить сохранённый макрос, затем вып
     {/or:a b} a || b
     {/if:condition then else} if (condition) then (then) else (else)
 * Примитивные генераторы
-    {/int:left right}
-    {/double:left right}
-    {/char:left right}
+    {/int:left right} - Случайный int
+    {/double:left right} - Случайный double
+    {/char:left right} - Случайный символ
+    {/che:a b c d} - Выбор случайного элемента последовательности
 * Генератор массивов
     {/arr:length split <Примитивный генератор> <Параметры генератора>}

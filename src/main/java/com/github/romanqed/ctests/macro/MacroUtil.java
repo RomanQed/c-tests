@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 
 public class MacroUtil {
     public static final List<MacroCommand> COMMANDS;
-    static final Pattern MACRO = Pattern.compile("\\{(.)([^:;]+)(?::([^;]*))?};?");
+    static final Pattern MACRO = Pattern.compile("\\{(.)([^:;]+)(?::([^;]+))?};?");
 
     static {
         try {

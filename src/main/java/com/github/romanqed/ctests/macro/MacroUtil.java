@@ -2,13 +2,13 @@ package com.github.romanqed.ctests.macro;
 
 import com.github.romanqed.ctests.util.ReflectionUtil;
 
-import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MacroUtil {
-    public static final List<MacroCommand> COMMANDS;
-    static final Pattern MACRO = Pattern.compile("\\{(.)([^:;]+)(?::([^;]+))?};?");
+    protected static final Map<String, MacroCommand> COMMANDS;
+    protected static final Pattern MACRO = Pattern.compile("\\{(.)([^:;]+)(?::([^;]+))?};?");
 
     static {
         try {
@@ -29,11 +29,11 @@ public class MacroUtil {
     }
 
     public static String parseLine(String rawString) throws Exception {
-        return parseLine(rawString, new MacroProcessor(COMMANDS));
+        return parseLine(rawString, new MacroProcessor(COMMANDS.values()));
     }
 
     public static String parseMultiLine(String rawString) throws Exception {
-        MacroProcessor processor = new MacroProcessor(COMMANDS);
+        MacroProcessor processor = new MacroProcessor(COMMANDS.values());
         String[] lines = rawString.trim().split("\n");
         StringBuilder ret = new StringBuilder();
         for (String line : lines) {

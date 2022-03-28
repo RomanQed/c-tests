@@ -1,5 +1,7 @@
 package com.github.romanqed.ctests.util;
 
+import org.apache.commons.text.StringEscapeUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -41,7 +43,7 @@ public class ParseUtil {
                     throw new InvalidBracketException("Invalid bracket )", i);
                 }
                 if (count == 1) {
-                    ret.add(temp.toString());
+                    ret.add(StringEscapeUtils.unescapeJava(temp.toString()));
                     temp = new StringBuilder();
                     count = 0;
                 } else {
@@ -52,7 +54,7 @@ public class ParseUtil {
             }
             if (cur == BLANK && count == 0) {
                 if (temp.length() != 0) {
-                    ret.add(temp.toString());
+                    ret.add(StringEscapeUtils.unescapeJava(temp.toString()));
                     temp = new StringBuilder();
                 }
                 continue;

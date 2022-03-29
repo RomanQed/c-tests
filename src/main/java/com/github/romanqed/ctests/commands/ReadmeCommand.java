@@ -56,7 +56,7 @@ class Draft {
 }
 
 class AddCommand extends ConsoleCommand {
-    private static final String PATTERN = "- \\d - \\m";
+    private static final String PATTERN = "<p>(\\d): \\m</p>";
     private final Storage storage = StorageProvider.getStorage();
 
     public AddCommand() {

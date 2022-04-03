@@ -61,7 +61,7 @@ class LoadCommand extends ConsoleCommand {
         String template = IOUtil.readFile(toLoad);
         try {
             String out = MacroUtil.parseMultiLine(template);
-            System.out.println("Macro loaded, output:\n" + out);
+            System.out.println(toLoad.getName() + " loaded, output:\n" + out);
         } catch (Exception e) {
             System.out.println("Invalid macro: " + e.getMessage());
             return;

@@ -3,7 +3,6 @@ package com.github.romanqed.ctests.commands;
 import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
 import com.github.romanqed.ctests.macro.MacroUtil;
-import com.github.romanqed.ctests.storage.Field;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
@@ -15,16 +14,12 @@ import com.github.romanqed.ctests.util.ParseUtil;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @NamedCommand("tests")
 @Help("test")
 public class TestsCommand extends ConsoleCommand {
-    protected static final Field<String> MACRO_TEMPLATE = new Field<>("MACRO_TEMPLATE", String.class);
     private static final Menu MENU;
 
     static {
@@ -34,12 +29,10 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new EditCommand());
         commands.add(new CreateCommand());
         commands.add(new RemoveCommand());
-        commands.add(new TemplateCommand());
         commands.add(new GenerateCommand());
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
-        MENU.onExit(() -> StorageProvider.getStorage().remove(MACRO_TEMPLATE));
     }
 
     private final Storage storage = StorageProvider.getStorage();
@@ -348,20 +341,6 @@ class RemoveCommand extends ConsoleCommand {
     }
 }
 
-class TemplateCommand extends ConsoleCommand {
-    private final Storage storage = StorageProvider.getStorage();
-
-    public TemplateCommand() {
-        super("template", "test_template");
-    }
-
-    @Override
-    public void handle(List<String> arguments) {
-        String template = IOUtil.readMultiString(Util.STOP_CODE);
-        storage.set(TestsCommand.MACRO_TEMPLATE, template);
-    }
-}
-
 class GenerateCommand extends ConsoleCommand {
     private final Storage storage = StorageProvider.getStorage();
 
@@ -371,24 +350,31 @@ class GenerateCommand extends ConsoleCommand {
 
     @Override
     public void handle(List<String> arguments) throws Exception {
-        if (arguments.size() != 1) {
+        if (arguments.size() < 2) {
             System.out.println("Неверное количество аргументов!");
             return;
         }
-        String template = storage.get(TestsCommand.MACRO_TEMPLATE);
-        if (template == null) {
-            System.out.println("Шаблон для тестов не задан!");
-            return;
-        }
         int count = Integer.parseInt(arguments.get(0));
+        Map<String, String> macros = storage.get(MacrosCommand.MACRO_TABLE);
+        StringBuilder commonTemplateBuilder = new StringBuilder();
+        for (int i = 1; i < arguments.size(); ++i) {
+            String template = macros.get(arguments.get(i));
+            if (template == null) {
+                System.out.println("Unknown template, can't build common template!");
+            }
+            commonTemplateBuilder.append(template).append('\n');
+        }
+        String commonTemplate = commonTemplateBuilder.toString();
         Task task = storage.get(Main.TASK);
         List<MarkedTest> tests = task.getTests();
         String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
         for (int i = 0; i < count; ++i) {
             MarkedTest test = Util.generateTest(task, TestType.POSITIVE, false);
-            String input = MacroUtil.parseMultiLine(template);
+            String input = MacroUtil.parseMultiLine(commonTemplate);
             ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
             if (data.getCode() != 0) {
+                System.out.println("Input:\n" + input);
+                System.out.println("Output:\n" + data.getOutput());
                 throw new IllegalStateException("The program returned not 0 on a positive test");
             }
             IOUtil.writeFile(test.getInput(), input);

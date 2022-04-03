@@ -14,6 +14,17 @@ public class IOUtil {
     private static final Pattern IN = Pattern.compile("(pos|neg)_(\\d+)_in\\.txt");
     private static final Pattern OUT = Pattern.compile("(pos|neg)_(\\d+)_out\\.txt");
     private static final Pattern ARGS = Pattern.compile("(pos|neg)_(\\d+)_args\\.txt");
+    private static final char POINT = '.';
+
+    public static String[] splitFileName(File file) {
+        Objects.requireNonNull(file);
+        String name = file.getName();
+        int index = name.indexOf(POINT);
+        if (index < 0) {
+            return new String[] {name, ""};
+        }
+        return new String[] {name.substring(0, index), name.substring(index + 1)};
+    }
 
     public static String readInputStream(InputStream stream, Charset charset) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream, charset));

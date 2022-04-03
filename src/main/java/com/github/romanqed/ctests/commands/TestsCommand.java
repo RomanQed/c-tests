@@ -361,6 +361,7 @@ class GenerateCommand extends ConsoleCommand {
             String template = macros.get(arguments.get(i));
             if (template == null) {
                 System.out.println("Unknown template, can't build common template!");
+                return;
             }
             commonTemplateBuilder.append(template).append('\n');
         }

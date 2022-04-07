@@ -252,15 +252,17 @@ class CreateCommand extends ConsoleCommand {
         List<MarkedTest> all = task.getTests();
         MarkedTest test = Util.generateTest(task, TestType.fromName(arguments.get(0)), needArguments);
         String input = IOUtil.readMultiString(Util.STOP_CODE);
-        String testArguments = " ";
+        String[] testArguments = new String[0];
         if (needArguments) {
-            testArguments += Util.SCANNER.nextLine();
-            IOUtil.writeFile(test.getArguments(), testArguments);
+            String rawArguments = Util.SCANNER.nextLine();
+            rawArguments = rawArguments.replaceAll("\\s+", " ");
+            IOUtil.writeFile(test.getArguments(), rawArguments);
+            testArguments = rawArguments.split(" ");
         }
         String output;
         if (auto) {
-            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP + testArguments;
-            ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
+            ExecUtil.ExecData data = ExecUtil.runProcess(command, testArguments, input);
             if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {
                 throw new IllegalStateException("The program returned not 0 on a positive test");
             }

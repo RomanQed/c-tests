@@ -42,15 +42,17 @@ public class RunCommand extends ConsoleCommand {
 
     private boolean runTest(String command, MarkedTest test) throws IOException, InterruptedException {
         String input = IOUtil.readFile(test.getInput());
+        String[] arguments = new String[0];
         if (test.getArguments() != null) {
-            String arguments = IOUtil.readFile(test.getArguments());
-            int index = arguments.indexOf('\n');
+            String rawArguments = IOUtil.readFile(test.getArguments());
+            int index = rawArguments.indexOf('\n');
             if (index >= 0) {
-                arguments = arguments.substring(0, index);
+                rawArguments = rawArguments.substring(0, index);
             }
-            command = command + " " + arguments;
+            rawArguments = rawArguments.replaceAll("\\s+", " ");
+            arguments = rawArguments.split(" ");
         }
-        ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+        ExecUtil.ExecData data = ExecUtil.runProcess(command, arguments, input);
         String output = IOUtil.readFile(test.getOutput()).trim();
         String pattern = "[" + test.getType() + " test #" + test.getNumber() + "] ";
         if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {

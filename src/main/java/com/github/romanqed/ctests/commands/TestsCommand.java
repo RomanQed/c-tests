@@ -2,19 +2,14 @@ package com.github.romanqed.ctests.commands;
 
 import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
-import com.github.romanqed.ctests.entities.Test;
 import com.github.romanqed.ctests.macro.MacroUtil;
-import com.github.romanqed.ctests.mongo.MongoRepository;
-import com.github.romanqed.ctests.mongo.Store;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
-import com.github.romanqed.ctests.tasks.TaskData;
 import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.tests.TestType;
 import com.github.romanqed.ctests.util.ExecUtil;
 import com.github.romanqed.ctests.util.IOUtil;
-import com.github.romanqed.ctests.util.MongoUtil;
 import com.github.romanqed.ctests.util.ParseUtil;
 
 import java.io.File;
@@ -35,7 +30,6 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new CreateCommand());
         commands.add(new RemoveCommand());
         commands.add(new GenerateCommand());
-        commands.add(new UploadCommand());
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));
@@ -258,15 +252,17 @@ class CreateCommand extends ConsoleCommand {
         List<MarkedTest> all = task.getTests();
         MarkedTest test = Util.generateTest(task, TestType.fromName(arguments.get(0)), needArguments);
         String input = IOUtil.readMultiString(Util.STOP_CODE);
-        String testArguments = " ";
+        String[] testArguments = new String[0];
         if (needArguments) {
-            testArguments += Util.SCANNER.nextLine();
-            IOUtil.writeFile(test.getArguments(), testArguments);
+            String rawArguments = Util.SCANNER.nextLine();
+            rawArguments = rawArguments.replaceAll("\\s+", " ");
+            IOUtil.writeFile(test.getArguments(), rawArguments);
+            testArguments = rawArguments.split(" ");
         }
         String output;
         if (auto) {
-            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP + testArguments;
-            ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+            String command = task.getDirectory().getAbsolutePath() + "/" + ExecUtil.APP;
+            ExecUtil.ExecData data = ExecUtil.runProcess(command, testArguments, input);
             if (test.getType() == TestType.POSITIVE && data.getCode() != 0) {
                 throw new IllegalStateException("The program returned not 0 on a positive test");
             }
@@ -389,45 +385,5 @@ class GenerateCommand extends ConsoleCommand {
             tests.add(test);
         }
         System.out.println("Успешно добавлено " + count + " тестов!");
-    }
-}
-
-class UploadCommand extends ConsoleCommand {
-    private final Storage storage = StorageProvider.getStorage();
-
-    public UploadCommand() {
-        super("upload", "test_upload");
-    }
-
-    @Override
-    public void handle(List<String> arguments) throws IOException {
-        if (MongoRepository.getPrimaryInstance() == null) {
-            System.out.println("Подключение к базе данных не установлено!");
-            return;
-        }
-        TaskData data = storage.get(Main.TASK).getData();
-        if (!MongoUtil.putTaskData(data)) {
-            System.out.println("Невозможно отправить данные о таске!");
-            return;
-        }
-        List<MarkedTest> tests = storage.get(Main.TASK).getTests();
-        List<Test> toPut = new LinkedList<>();
-        for (MarkedTest test : tests) {
-            Test toAdd = new Test();
-            toAdd.setType(test.getType());
-            toAdd.setLab(data.getLabNumber());
-            toAdd.setTask(data.getNumber());
-            toAdd.setVariant(data.getVariant());
-            toAdd.setInput(IOUtil.readFile(test.getInput()));
-            if (test.getOutput() != null) {
-                toAdd.setOutput(IOUtil.readFile(test.getOutput()));
-            }
-            if (test.getArguments() != null) {
-                toAdd.setArguments(IOUtil.readFile(test.getArguments()));
-            }
-            toPut.add(toAdd);
-        }
-        long put = Store.TESTS.put(toPut);
-        System.out.println("Успешно отправлено " + put + " тестов!");
     }
 }

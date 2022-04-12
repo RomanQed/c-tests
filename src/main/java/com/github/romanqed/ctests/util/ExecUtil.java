@@ -3,16 +3,21 @@ package com.github.romanqed.ctests.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class ExecUtil {
     public static final long TIMEOUT = 10;
     public static final String APP = "app.exe";
 
-    public static ExecData runProcess(String command, String input) throws IOException, InterruptedException {
+    public static ExecData runProcess(String command, String[] arguments, String input)
+            throws IOException, InterruptedException {
         Objects.requireNonNull(command);
-        ProcessBuilder builder = new ProcessBuilder(command);
+        Objects.requireNonNull(arguments);
+        List<String> toBuild = new LinkedList<>();
+        toBuild.add(command);
+        toBuild.addAll(Arrays.asList(arguments));
+        ProcessBuilder builder = new ProcessBuilder(toBuild);
         Process process = builder.start();
         OutputStream outputStream = process.getOutputStream();
         IOUtil.writeOutputStream(outputStream, input);

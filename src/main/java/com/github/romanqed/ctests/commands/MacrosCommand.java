@@ -19,9 +19,9 @@ import java.util.regex.Pattern;
 @NamedCommand("macros")
 @Help("macros")
 public class MacrosCommand extends ConsoleCommand {
+    protected static final Field<Map<String, String>> MACRO_TABLE = new Field<>("MACRO_TABLE", Map.class);
     private static final Menu MENU;
     protected static File PATH;
-    protected static final Field<Map<String, String>> MACRO_TABLE = new Field<>("MACRO_TABLE", Map.class);
 
     static {
         StorageProvider.getStorage().set(MACRO_TABLE, new ConcurrentHashMap<>());

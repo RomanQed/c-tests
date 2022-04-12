@@ -2,14 +2,19 @@ package com.github.romanqed.ctests.commands;
 
 import com.github.romanqed.ctests.Main;
 import com.github.romanqed.ctests.Menu;
+import com.github.romanqed.ctests.entities.Test;
 import com.github.romanqed.ctests.macro.MacroUtil;
+import com.github.romanqed.ctests.mongo.MongoRepository;
+import com.github.romanqed.ctests.mongo.Store;
 import com.github.romanqed.ctests.storage.Storage;
 import com.github.romanqed.ctests.storage.StorageProvider;
 import com.github.romanqed.ctests.tasks.Task;
+import com.github.romanqed.ctests.tasks.TaskData;
 import com.github.romanqed.ctests.tests.MarkedTest;
 import com.github.romanqed.ctests.tests.TestType;
 import com.github.romanqed.ctests.util.ExecUtil;
 import com.github.romanqed.ctests.util.IOUtil;
+import com.github.romanqed.ctests.util.MongoUtil;
 import com.github.romanqed.ctests.util.ParseUtil;
 
 import java.io.File;
@@ -374,7 +379,7 @@ class GenerateCommand extends ConsoleCommand {
         for (int i = 0; i < count; ++i) {
             MarkedTest test = Util.generateTest(task, TestType.POSITIVE, false);
             String input = MacroUtil.parseMultiLine(commonTemplate);
-            ExecUtil.ExecData data = ExecUtil.runProcess(command, input);
+            ExecUtil.ExecData data = ExecUtil.runProcess(command, new String[0], input);
             if (data.getCode() != 0) {
                 System.out.println("Input:\n" + input);
                 System.out.println("Output:\n" + data.getOutput());
@@ -385,5 +390,45 @@ class GenerateCommand extends ConsoleCommand {
             tests.add(test);
         }
         System.out.println("Успешно добавлено " + count + " тестов!");
+    }
+}
+
+class UploadCommand extends ConsoleCommand {
+    private final Storage storage = StorageProvider.getStorage();
+
+    public UploadCommand() {
+        super("upload", "test_upload");
+    }
+
+    @Override
+    public void handle(List<String> arguments) throws IOException {
+        if (MongoRepository.getPrimaryInstance() == null) {
+            System.out.println("Подключение к базе данных не установлено!");
+            return;
+        }
+        TaskData data = storage.get(Main.TASK).getData();
+        if (!MongoUtil.putTaskData(data)) {
+            System.out.println("Невозможно отправить данные о таске!");
+            return;
+        }
+        List<MarkedTest> tests = storage.get(Main.TASK).getTests();
+        List<Test> toPut = new LinkedList<>();
+        for (MarkedTest test : tests) {
+            Test toAdd = new Test();
+            toAdd.setType(test.getType());
+            toAdd.setLab(data.getLabNumber());
+            toAdd.setTask(data.getNumber());
+            toAdd.setVariant(data.getVariant());
+            toAdd.setInput(IOUtil.readFile(test.getInput()));
+            if (test.getOutput() != null) {
+                toAdd.setOutput(IOUtil.readFile(test.getOutput()));
+            }
+            if (test.getArguments() != null) {
+                toAdd.setArguments(IOUtil.readFile(test.getArguments()));
+            }
+            toPut.add(toAdd);
+        }
+        long put = Store.TESTS.put(toPut);
+        System.out.println("Успешно отправлено " + put + " тестов!");
     }
 }

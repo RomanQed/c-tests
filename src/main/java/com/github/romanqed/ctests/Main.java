@@ -18,9 +18,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static final String DATABASE = "debug";
-
     public static final Field<Task> TASK = new Field<>("TASK", Task.class);
+    private static final String DATABASE = "ctests";
 
     public static void main(String[] args) throws Exception {
         if (args.length > 0) {

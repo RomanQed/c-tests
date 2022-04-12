@@ -21,9 +21,9 @@ public class IOUtil {
         String name = file.getName();
         int index = name.indexOf(POINT);
         if (index < 0) {
-            return new String[] {name, ""};
+            return new String[]{name, ""};
         }
-        return new String[] {name.substring(0, index), name.substring(index + 1)};
+        return new String[]{name.substring(0, index), name.substring(index + 1)};
     }
 
     public static String readInputStream(InputStream stream, Charset charset) throws IOException {

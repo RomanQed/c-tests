@@ -39,6 +39,6 @@ public class Variant extends AbstractEntity {
     }
 
     public void setNumber(int number) {
-        this.number = Checks.requireCorrectValue(number, e -> e > 0);
+        this.number = number;
     }
 }

@@ -35,6 +35,7 @@ public class TestsCommand extends ConsoleCommand {
         commands.add(new CreateCommand());
         commands.add(new RemoveCommand());
         commands.add(new GenerateCommand());
+        commands.add(new UploadCommand());
         MENU = new Menu(commands);
         MENU.addCommand(new HelpCommand(MENU.getCommands()));
         MENU.addCommand(new MenuCommand(MENU.getCommands().keySet()));

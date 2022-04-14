@@ -1,14 +1,19 @@
 package com.github.romanqed.ctests.macro;
 
-import com.github.romanqed.ctests.util.InvalidBracketException;
-import com.github.romanqed.ctests.util.ParseUtil;
+import com.github.romanqed.jutils.util.BracketTokenizer;
+import org.apache.commons.text.StringEscapeUtils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 
 public class Macro {
+    private static final char OPEN = '(';
+    private static final char CLOSE = ')';
+    private static final String BLANK = " ";
+    private static final BracketTokenizer TOKENIZER = new BracketTokenizer(OPEN, CLOSE, BLANK);
     private final MacroType type;
     private final String name;
     private final List<String> arguments;
@@ -19,7 +24,7 @@ public class Macro {
         this.arguments = Objects.requireNonNull(arguments);
     }
 
-    public static Macro parse(String rawMacro) throws InvalidBracketException {
+    public static Macro parse(String rawMacro) throws ParseException {
         Matcher matcher = MacroUtil.MACRO.matcher(rawMacro);
         if (!matcher.matches()) {
             throw new IllegalArgumentException("Invalid macro string: " + rawMacro);
@@ -31,7 +36,8 @@ public class Macro {
         if (rawArguments == null) {
             arguments = new ArrayList<>();
         } else {
-            arguments = ParseUtil.parseBrackets(rawArguments);
+            arguments = TOKENIZER.tokenize(rawArguments);
+            arguments.replaceAll(StringEscapeUtils::unescapeJava);
         }
         return new Macro(type, name, arguments);
     }

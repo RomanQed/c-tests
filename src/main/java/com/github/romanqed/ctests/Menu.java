@@ -1,7 +1,7 @@
 package com.github.romanqed.ctests;
 
 import com.github.romanqed.ctests.commands.ConsoleCommand;
-import com.github.romanqed.ctests.util.ParseUtil;
+import com.github.romanqed.jutils.util.QuoteTokenizer;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,6 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Menu implements Runnable {
     private static final char SPLIT = ' ';
+    private static final QuoteTokenizer TOKENIZER = new QuoteTokenizer(SPLIT);
     private static final String EXIT = "exit";
     private static final String NOT_FOUND = "Command not found!";
 
@@ -43,7 +44,7 @@ public class Menu implements Runnable {
             return ret;
         }
         ret.command = rawString.substring(0, pos);
-        ret.arguments = ParseUtil.parseArguments(rawString.substring(pos + 1));
+        ret.arguments = TOKENIZER.tokenize(rawString.substring(pos + 1));
         return ret;
     }
 

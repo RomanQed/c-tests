@@ -30,7 +30,7 @@ public class MongoUtil {
         }
         filter = Filters.and(Filters.eq("lab", data.getLabNumber()),
                 Filters.eq("task", data.getNumber()),
-                Filters.eq("variant", data.getVariant()));
+                Filters.eq("number", data.getVariant()));
         if (Store.VARIANTS.find(filter).isEmpty()) {
             Variant toPut = new Variant();
             toPut.setLab(data.getLabNumber());

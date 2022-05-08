@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Menu implements Runnable {
     private static final char SPLIT = ' ';
-    private static final QuoteTokenizer TOKENIZER = new QuoteTokenizer(SPLIT);
+    private static final QuoteTokenizer TOKENIZER = new QuoteTokenizer();
     private static final String EXIT = "exit";
     private static final String NOT_FOUND = "Command not found!";
 

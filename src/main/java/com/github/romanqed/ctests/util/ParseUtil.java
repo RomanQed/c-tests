@@ -4,7 +4,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ParseUtil {
-    private static final Pattern ARGUMENTS = Pattern.compile("\"([^\"]+)\"|\\S+");
     private static final Pattern TEST_NAME = Pattern.compile("\\d+");
 
     public static String formatNumber(int number) {
